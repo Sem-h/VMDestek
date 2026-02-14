@@ -1,0 +1,132 @@
+╔══════════════════════════════════════════════════════════════╗
+║                    VMDestek v1.0                             ║
+║              Canlı Destek Sistemi                            ║
+╚══════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Geliştirici Bilgileri
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Bu proje Semih AKBAŞ tarafından geliştirilmiştir.
+
+  Web      : https://semihakbas.com.tr
+  E-posta  : info@semihakbas.com.tr
+  GitHub   : https://github.com/semihakbas
+
+  Semih AKBAŞ, yazılım geliştirme alanında uzmanlaşmış bir
+  Full-Stack Developer ve CTO'dur. Web uygulamaları, mobil
+  uygulamalar, e-ticaret sistemleri ve kurumsal yazılım 
+  çözümleri konusunda geniş deneyime sahiptir.
+
+  VMDestek, Semih AKBAŞ tarafından sıfırdan tasarlanıp 
+  geliştirilen, modern ve kullanıcı dostu bir canlı destek
+  çözümüdür. Herhangi bir web sitesine kolayca entegre 
+  edilebilir.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Proje Hakkında
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  VMDestek, web siteleri için geliştirilmiş açık kaynaklı bir 
+  canlı destek (live chat) sistemidir. Ziyaretçilerinizle 
+  gerçek zamanlı olarak iletişim kurmanızı sağlar.
+
+  Özellikler:
+  ─────────────────────────────────────────────────────────────
+  • Gerçek zamanlı canlı sohbet
+  • Birden fazla müşteri temsilci desteği
+  • Ziyaretçi bilgileri takibi (IP, tarayıcı, sayfa)
+  • Konuşma notları ve hatırlatmalar
+  • Hazır yanıt şablonları
+  • Otomatik yanıt sistemi
+  • Çalışma saatleri ayarları
+  • Sohbet değerlendirme (yıldız puanlama)
+  • Widget renk ve tema özelleştirme
+  • Baloncuk (bubble) modu ile minimal tasarım
+  • Karşılama mesajı ve tooltip
+  • Mobil uyumlu (responsive) arayüz
+  • Kolay embed kodu ile entegrasyon
+  • Admin paneli ile tam kontrol
+  • Kullanıcı yönetimi (Admin/Operatör rolleri)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Sistem Gereksinimleri
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  • PHP 7.4 veya üzeri
+  • MySQL 5.7+ veya MariaDB 10.3+
+  • Apache / Nginx web sunucusu
+  • PDO PHP eklentisi
+  • mbstring PHP eklentisi
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Kurulum
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. Dosyaları web sunucunuza yükleyin
+  2. Tarayıcınızda install.php dosyasını açın:
+     http://siteadresiniz.com/install.php
+  3. Kurulum sihirbazını takip edin:
+     - Veritabanı bilgilerinizi girin
+     - Admin hesabı oluşturun
+     - Kurulumu tamamlayın
+  4. Admin paneline giriş yapın:
+     http://siteadresiniz.com/admin/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Web Sitenize Ekleme
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Aşağıdaki kodu web sitenizin </body> etiketinden önce ekleyin:
+
+  <script src="http://siteadresiniz.com/embed.js"></script>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Dosya Yapısı
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  VMDestek/
+  ├── admin/           → Admin paneli
+  │   ├── index.php    → Ana panel sayfası
+  │   ├── login.php    → Giriş sayfası
+  │   ├── settings.php → Ayarlar sayfası
+  │   ├── css/         → Admin stilleri
+  │   └── js/          → Admin JavaScript
+  ├── api/             → API endpointleri
+  │   ├── admin.php    → Admin API
+  │   └── chat.php     → Widget/Chat API
+  ├── widget/          → Ziyaretçi widget'ı
+  │   ├── index.php    → Widget sayfası
+  │   ├── css/         → Widget stilleri
+  │   └── js/          → Widget JavaScript
+  ├── config.php       → Yapılandırma dosyası
+  ├── db.php           → Veritabanı bağlantısı
+  ├── embed.js         → Embed betiği
+  ├── database.sql     → Veritabanı şeması
+  ├── install.php      → Kurulum sihirbazı
+  └── oku.txt          → Bu dosya
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Teknolojiler
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Backend  : PHP (Native)
+  Frontend : HTML5, CSS3, JavaScript (Vanilla)
+  Veritabanı: MySQL / MariaDB
+  Fontlar  : Inter (Google Fonts)
+  İkonlar  : Font Awesome 6.5
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Lisans ve Telif
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  © 2026 Semih AKBAŞ - Tüm hakları saklıdır.
+  https://semihakbas.com.tr
+
+  Bu yazılım Semih AKBAŞ tarafından geliştirilmiştir.
+  İzinsiz kopyalanması, dağıtılması veya ticari amaçla 
+  kullanılması yasaktır.
+
+  Destek ve iletişim: info@semihakbas.com.tr
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -1,0 +1,21 @@
+# VMDestek - Git Ignore
+config.php
+install.lock
+test.html
+uploads/*
+!uploads/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Gemini
+.gemini/
