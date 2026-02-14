@@ -324,6 +324,131 @@ if (!isset($_SESSION['admin_id'])) {
             font-family: inherit;
         }
 
+        /* Auto Update */
+        .update-card {
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            background: rgba(102, 126, 234, 0.04);
+        }
+
+        .update-version-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+        }
+
+        .update-version-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .update-status {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .update-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-check-update {
+            padding: 8px 18px;
+            background: var(--bg-glass);
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .btn-check-update:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: #667eea;
+        }
+
+        .btn-apply-update {
+            padding: 8px 18px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            display: none;
+        }
+
+        .btn-apply-update:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .update-result {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .update-result.has-update {
+            display: block;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        .update-result.no-update {
+            display: block;
+            background: rgba(102, 126, 234, 0.08);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            color: #93a4f4;
+        }
+
+        .update-result.update-error {
+            display: block;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .update-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         /* Admin Users Manager */
         .admin-list-manager {
             max-height: 400px;
@@ -681,6 +806,31 @@ if (!isset($_SESSION['admin_id'])) {
                 </div>
             </div>
 
+            <!-- Auto Update -->
+            <div class="settings-card update-card" style="grid-column: 1 / -1">
+                <h2><i class="fas fa-cloud-download-alt"></i> Sistem Güncellemesi</h2>
+
+                <div class="update-version-info">
+                    <div class="update-version-badge">
+                        <i class="fas fa-tag"></i>
+                        <span id="currentVersion">v...</span>
+                    </div>
+                    <div class="update-status" id="updateStatus">
+                        Güncel sürüm bilgisi yükleniyor...
+                    </div>
+                    <div class="update-actions">
+                        <button class="btn-check-update" onclick="checkForUpdate()" id="btnCheckUpdate">
+                            <i class="fas fa-sync-alt"></i> Güncelleme Kontrol Et
+                        </button>
+                        <button class="btn-apply-update" onclick="applyUpdate()" id="btnApplyUpdate">
+                            <i class="fas fa-download"></i> Güncelle
+                        </button>
+                    </div>
+                </div>
+
+                <div class="update-result" id="updateResult"></div>
+            </div>
+
             <!-- Save Button -->
             <div class="settings-card" style="display:flex;align-items:center;justify-content:center">
                 <button class="btn-save" onclick="saveAllSettings()">
@@ -991,6 +1141,110 @@ if (!isset($_SESSION['admin_id'])) {
                 console.error('Delete admin error:', err);
             }
         }
+
+        // === AUTO UPDATE ===
+        async function loadVersionInfo() {
+            try {
+                const res = await fetch(`${SITE_URL}/version.json?t=${Date.now()}`);
+                const data = await res.json();
+                document.getElementById('currentVersion').textContent = 'v' + data.version;
+                document.getElementById('updateStatus').textContent = `Sürüm: ${data.version} | Build: ${data.build}`;
+            } catch (err) {
+                document.getElementById('currentVersion').textContent = 'v?';
+                document.getElementById('updateStatus').textContent = 'Sürüm bilgisi okunamadı';
+            }
+        }
+
+        async function checkForUpdate() {
+            const btn = document.getElementById('btnCheckUpdate');
+            const result = document.getElementById('updateResult');
+            const applyBtn = document.getElementById('btnApplyUpdate');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="update-spinner"></span> Kontrol ediliyor...';
+            result.className = 'update-result';
+            result.style.display = 'none';
+            applyBtn.style.display = 'none';
+
+            try {
+                const res = await fetch(`${SITE_URL}/api/update.php?action=check`);
+                const data = await res.json();
+
+                if (data.error) {
+                    result.className = 'update-result update-error';
+                    result.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${data.error}`;
+                    result.style.display = 'block';
+                } else if (data.has_update) {
+                    result.className = 'update-result has-update';
+                    let html = `<i class="fas fa-arrow-circle-up"></i> <strong>Yeni sürüm mevcut: v${data.remote_version.version}</strong> (Build: ${data.remote_version.build})`;
+                    if (data.commit) {
+                        html += `<br><small style="opacity:0.7">Son commit: ${escapeHtml(data.commit.message)} (${data.commit.sha})</small>`;
+                    }
+                    result.innerHTML = html;
+                    result.style.display = 'block';
+                    applyBtn.style.display = 'inline-flex';
+                } else {
+                    result.className = 'update-result no-update';
+                    let html = '<i class="fas fa-check-circle"></i> Sisteminiz güncel!';
+                    if (data.commit) {
+                        html += `<br><small style="opacity:0.7">Son commit: ${escapeHtml(data.commit.message)} (${data.commit.sha})</small>`;
+                    }
+                    result.innerHTML = html;
+                    result.style.display = 'block';
+                }
+            } catch (err) {
+                result.className = 'update-result update-error';
+                result.innerHTML = '<i class="fas fa-times-circle"></i> Güncelleme sunucusuna bağlanılamadı.';
+                result.style.display = 'block';
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> Güncelleme Kontrol Et';
+        }
+
+        async function applyUpdate() {
+            if (!confirm('Güncelleme uygulanacak. Devam etmek istiyor musunuz?\n\nNot: config.php ve uploads klasörünüz korunacaktır.')) return;
+
+            const btn = document.getElementById('btnApplyUpdate');
+            const result = document.getElementById('updateResult');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="update-spinner"></span> Güncelleniyor...';
+
+            try {
+                const res = await fetch(`${SITE_URL}/api/update.php?action=apply`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    result.className = 'update-result has-update';
+                    result.innerHTML = `<i class="fas fa-check-circle"></i> <strong>${data.message}</strong><br><small>${data.files_updated} dosya güncellendi. Sayfa yeniden yükleniyor...</small>`;
+                    result.style.display = 'block';
+                    btn.style.display = 'none';
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    result.className = 'update-result update-error';
+                    result.innerHTML = `<i class="fas fa-times-circle"></i> ${data.error || 'Güncelleme sırasında bir hata oluştu.'}`;
+                    result.style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-download"></i> Güncelle';
+                }
+            } catch (err) {
+                result.className = 'update-result update-error';
+                result.innerHTML = '<i class="fas fa-times-circle"></i> Güncelleme uygulanırken bir hata oluştu.';
+                result.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-download"></i> Güncelle';
+            }
+        }
+
+        // Sayfa yüklendiğinde sürüm bilgisini yükle
+        loadVersionInfo();
     </script>
 </body>
 
