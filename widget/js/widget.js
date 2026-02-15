@@ -17,7 +17,32 @@ function minimizeWidget() {
     if (window.parent !== window) {
         window.parent.postMessage({ type: 'vmdestek-minimize' }, '*');
     }
+
+    // Fallback: If embedded as standalone iframe (no embed.js),
+    // hide the widget container so the user can see it's minimized
+    const container = document.getElementById('widgetContainer');
+    if (container) {
+        container.classList.add('minimized');
+    }
 }
+
+// Listen for restore message from parent
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'vmdestek-restore') {
+        const container = document.getElementById('widgetContainer');
+        if (container) {
+            container.classList.remove('minimized');
+        }
+    }
+});
+
+// Clicking the minimized bar restores the widget
+document.addEventListener('click', (e) => {
+    const container = document.getElementById('widgetContainer');
+    if (container && container.classList.contains('minimized')) {
+        container.classList.remove('minimized');
+    }
+});
 
 // ============ INIT ============
 document.addEventListener('DOMContentLoaded', () => {

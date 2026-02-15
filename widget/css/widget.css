@@ -620,3 +620,29 @@ body {
         font-size: 36px;
     }
 }
+
+/* ============ MINIMIZED STATE ============ */
+/* When widget is minimized (standalone iframe mode) */
+.widget-container.minimized {
+    height: auto !important;
+    min-height: 0;
+}
+
+.widget-container.minimized .widget-screen {
+    display: none !important;
+}
+
+.widget-container.minimized::after {
+    content: '💬 Sohbeti Aç';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 20px;
+    background: var(--w-gradient);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 16px 16px 0 0;
+}
