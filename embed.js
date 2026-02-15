@@ -61,6 +61,12 @@
             transition: all 0.3s;
         }
 
+        #vmdestek-button.open {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.5);
+        }
+
         #vmdestek-button.open svg.icon-chat {
             display: none;
         }
