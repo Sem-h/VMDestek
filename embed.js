@@ -268,9 +268,17 @@
         button.classList.toggle('open', isOpen);
         iframeContainer.classList.toggle('open', isOpen);
 
-        // Hide greeting when opened
-        greeting.classList.remove('show');
-        clearTimeout(greetingTimer);
+        if (isOpen) {
+            // Hide greeting when opened
+            greeting.classList.remove('show');
+            clearTimeout(greetingTimer);
+        } else {
+            // Show greeting again after closing
+            greetingTimer = setTimeout(() => {
+                greeting.classList.add('show');
+                setTimeout(() => greeting.classList.remove('show'), 10000);
+            }, 2000);
+        }
     });
 
     // Close greeting on click
@@ -316,6 +324,12 @@
             isOpen = false;
             button.classList.remove('open');
             iframeContainer.classList.remove('open');
+
+            // Show greeting again after minimize
+            greetingTimer = setTimeout(() => {
+                greeting.classList.add('show');
+                setTimeout(() => greeting.classList.remove('show'), 10000);
+            }, 2000);
         }
     });
 
