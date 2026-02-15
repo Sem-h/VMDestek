@@ -901,6 +901,19 @@ if (!isset($_SESSION['admin_id'])) {
                             </select>
                         </div>
                     </div>
+                    <div class="field-row single">
+                        <div class="field-group">
+                            <label><i class="fas fa-globe" style="margin-right:6px;color:#667eea"></i> Widget
+                                Dili</label>
+                            <select id="widgetLanguage">
+                                <option value="tr">🇹🇷 Türkçe</option>
+                                <option value="en">🇬🇧 English</option>
+                                <option value="ar">🇸🇦 العربية (RTL)</option>
+                            </select>
+                            <small style="color:var(--text-muted);margin-top:6px;display:block">Dil dosyaları:
+                                <code>lang/</code> klasöründen düzenlenebilir</small>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-card">
@@ -1114,6 +1127,7 @@ if (!isset($_SESSION['admin_id'])) {
                     }
                     if (s.company_name) document.getElementById('companyName').value = s.company_name;
                     if (s.widget_position) document.getElementById('widgetPosition').value = s.widget_position;
+                    if (s.language) document.getElementById('widgetLanguage').value = s.language;
                     if (s.welcome_message) document.getElementById('welcomeMessage').value = s.welcome_message;
                     if (s.offline_message) document.getElementById('offlineMessage').value = s.offline_message;
                     if (s.auto_reply_message) document.getElementById('autoReplyMessage').value = s.auto_reply_message;
@@ -1140,6 +1154,7 @@ if (!isset($_SESSION['admin_id'])) {
                 widget_gradient_end: document.getElementById('widgetGradientEnd').value,
                 company_name: document.getElementById('companyName').value,
                 widget_position: document.getElementById('widgetPosition').value,
+                language: document.getElementById('widgetLanguage').value,
                 welcome_message: document.getElementById('welcomeMessage').value,
                 offline_message: document.getElementById('offlineMessage').value,
                 auto_reply_message: document.getElementById('autoReplyMessage').value,

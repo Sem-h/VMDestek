@@ -291,18 +291,25 @@ function rateConversation()
 
 function getStatus()
 {
+    require_once __DIR__ . '/../lang.php';
+
     // Check if any admin is online
     $admin = db()->fetch("SELECT COUNT(*) as count FROM admins WHERE is_online = 1");
     $online = ($admin['count'] ?? 0) > 0;
 
-    $settings = db()->fetchAll("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('widget_color','widget_gradient_end','company_name','company_logo','welcome_message','offline_message')");
+    $settings = db()->fetchAll("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('widget_color','widget_gradient_end','company_name','company_logo','welcome_message','offline_message','language')");
     $config = [];
     foreach ($settings as $s) {
         $config[$s['setting_key']] = $s['setting_value'];
     }
     $config['is_online'] = $online;
 
-    echo json_encode(['success' => true, 'config' => $config]);
+    // Load language
+    $langCode = $config['language'] ?? 'tr';
+    $langData = loadLang($langCode);
+    $config['language'] = $langCode;
+
+    echo json_encode(['success' => true, 'config' => $config, 'lang' => $langData['widget'] ?? []]);
 }
 
 function uploadImage()

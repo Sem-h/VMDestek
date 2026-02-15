@@ -162,6 +162,18 @@
         #vmd-widget .vmd-star:hover,#vmd-widget .vmd-star.active{color:#fbbf24!important;transform:scale(1.2)}
         #vmd-widget .vmd-star.active{text-shadow:0 2px 12px rgba(251,191,36,.4)}
 
+        /* ═══════ RTL SUPPORT ═══════ */
+        #vmd-widget[dir="rtl"] .vmd-msg.visitor{flex-direction:row-reverse!important}
+        #vmd-widget[dir="rtl"] .vmd-msg.visitor .vmd-msg-c{align-items:flex-start!important}
+        #vmd-widget[dir="rtl"] .vmd-msg.admin{flex-direction:row-reverse!important}
+        #vmd-widget[dir="rtl"] .vmd-msg.admin .vmd-msg-c{align-items:flex-end!important}
+        #vmd-widget[dir="rtl"] .vmd-input-wrap{direction:rtl!important}
+        #vmd-widget[dir="rtl"] .vmd-input{text-align:right!important}
+        #vmd-widget[dir="rtl"] .vmd-field label{text-align:right!important}
+        #vmd-widget[dir="rtl"] .vmd-field input,#vmd-widget[dir="rtl"] .vmd-field textarea{text-align:right!important}
+        #vmd-widget[dir="rtl"] .vmd-hdr-content{flex-direction:row-reverse!important}
+        #vmd-widget[dir="rtl"] .vmd-hdr-actions{flex-direction:row-reverse!important}
+
         /* ═══════ IMAGE MESSAGES ═══════ */
         #vmd-widget .vmd-msg-img{max-width:200px!important;max-height:200px!important;border-radius:12px!important;cursor:pointer!important;transition:opacity .2s!important;display:block!important;object-fit:cover!important}
         #vmd-widget .vmd-msg-img:hover{opacity:.85!important}
@@ -208,7 +220,7 @@
     // Greeting
     const greeting = document.createElement('div');
     greeting.id = 'vmd-greeting';
-    greeting.innerHTML = `<button class="vmd-close-g" onclick="this.parentElement.classList.remove('show')">&times;</button>Merhaba! Size yardımcı olabilir miyiz? 💬`;
+    greeting.innerHTML = `<button class="vmd-close-g" onclick="this.parentElement.classList.remove('show')">&times;</button>Merhaba! 💬`;
     document.body.appendChild(greeting);
 
     // Widget container
@@ -222,8 +234,8 @@
     function renderPreChat() {
         const online = config.is_online;
         const company = escapeHtml(config.company_name || 'VMDestek');
-        const welcomeMsg = escapeHtml(config.welcome_message || 'Size nasıl yardımcı olabiliriz?');
-        const offlineMsg = escapeHtml(config.offline_message || 'Şu anda çevrimdışıyız. Lütfen mesajınızı bırakın, en kısa sürede dönüş yapacağız.');
+        const welcomeMsg = escapeHtml(config.welcome_message || L.default_welcome);
+        const offlineMsg = escapeHtml(config.offline_message || L.default_offline);
 
         widget.innerHTML = `
         <div class="vmd-screen" id="vmd-prechat">
@@ -234,34 +246,34 @@
                         <h2>${company}</h2>
                         <div class="vmd-status">
                             <span class="vmd-dot ${online ? 'online' : 'offline'}"></span>
-                            <span>${online ? 'Çevrimiçi' : 'Çevrimdışı'}</span>
+                            <span>${online ? L.online : L.offline}</span>
                         </div>
                     </div>
                 </div>
                 <div class="vmd-hdr-actions">
-                    <button class="vmd-hdr-btn" id="vmd-minimize-btn" title="Küçült"><i class="fas fa-chevron-down"></i></button>
+                    <button class="vmd-hdr-btn" id="vmd-minimize-btn" title="${L.minimize}"><i class="fas fa-chevron-down"></i></button>
                 </div>
                 <div class="vmd-hdr-wave"><svg viewBox="0 0 400 30" preserveAspectRatio="none"><path d="M0,15 C100,25 200,5 300,15 C350,20 380,18 400,15 L400,30 L0,30 Z" fill="white"/></svg></div>
             </div>
             <div class="vmd-body vmd-prechat">
                 <div class="vmd-welcome">
                     ${online
-                ? `<div class="vmd-emoji">👋</div><h3>Merhaba!</h3><p>${welcomeMsg}</p>`
-                : `<div class="vmd-emoji">📨</div><h3>Mesaj Bırakın</h3><p>${offlineMsg}</p>`
+                ? `<div class="vmd-emoji">👋</div><h3>${L.hello}</h3><p>${welcomeMsg}</p>`
+                : `<div class="vmd-emoji">📨</div><h3>${L.leave_message}</h3><p>${offlineMsg}</p>`
             }
                 </div>
                 <form id="vmd-form">
                     <div class="vmd-field">
-                        <label><i class="fas fa-user"></i> Adınız</label>
-                        <input type="text" id="vmd-name" placeholder="Adınızı girin" required>
+                        <label><i class="fas fa-user"></i> ${L.name_label}</label>
+                        <input type="text" id="vmd-name" placeholder="${L.name_placeholder}" required>
                     </div>
                     <div class="vmd-field">
-                        <label><i class="fas fa-envelope"></i> E-posta ${online ? '<span style="opacity:.5">(opsiyonel)</span>' : '<span style="opacity:.8;color:var(--vmd-color)">(gerekli)</span>'}</label>
-                        <input type="email" id="vmd-email" placeholder="E-posta adresiniz" ${online ? '' : 'required'}>
+                        <label><i class="fas fa-envelope"></i> ${L.email_label} ${online ? `<span style="opacity:.5">${L.email_optional}</span>` : `<span style="opacity:.8;color:var(--vmd-color)">${L.email_required}</span>`}</label>
+                        <input type="email" id="vmd-email" placeholder="${L.email_placeholder}" ${online ? '' : 'required'}>
                     </div>
-                    ${!online ? `<div class="vmd-field"><label><i class="fas fa-comment-alt"></i> Mesajınız</label><textarea id="vmd-offline-msg" placeholder="Mesajınızı yazın..." rows="3" required></textarea></div>` : ''}
+                    ${!online ? `<div class="vmd-field"><label><i class="fas fa-comment-alt"></i> ${L.message_label}</label><textarea id="vmd-offline-msg" placeholder="${L.message_placeholder}" rows="3" required></textarea></div>` : ''}
                     <button type="submit" class="vmd-start-btn" id="vmd-start">
-                        <span class="vmd-btn-c">${online ? '<i class="fas fa-comment-dots"></i> Sohbet Başlat' : '<i class="fas fa-paper-plane"></i> Mesaj Gönder'}</span>
+                        <span class="vmd-btn-c">${online ? `<i class="fas fa-comment-dots"></i> ${L.start_chat}` : `<i class="fas fa-paper-plane"></i> ${L.send_message}`}</span>
                     </button>
                 </form>
             </div>
@@ -282,28 +294,28 @@
                     <div class="vmd-hdr-icon small"><i class="fas fa-headset"></i></div>
                     <div class="vmd-hdr-text">
                         <h2>${company}</h2>
-                        <div class="vmd-status"><span class="vmd-dot online"></span><span id="vmd-chat-status">Bağlandı</span></div>
+                        <div class="vmd-status"><span class="vmd-dot online"></span><span id="vmd-chat-status">${L.connected}</span></div>
                     </div>
                 </div>
                 <div class="vmd-hdr-actions">
-                    <button class="vmd-hdr-btn" id="vmd-min2" title="Küçült"><i class="fas fa-chevron-down"></i></button>
-                    <button class="vmd-hdr-btn" id="vmd-end" title="Sohbeti Bitir"><i class="fas fa-times"></i></button>
+                    <button class="vmd-hdr-btn" id="vmd-min2" title="${L.minimize}"><i class="fas fa-chevron-down"></i></button>
+                    <button class="vmd-hdr-btn" id="vmd-end" title="${L.end_chat}"><i class="fas fa-times"></i></button>
                 </div>
             </div>
             <div class="vmd-msgs" id="vmd-messages"></div>
             <div class="vmd-typing" id="vmd-typing" style="display:none">
                 <div class="vmd-typ-bbl"><span></span><span></span><span></span></div>
-                <span class="vmd-typ-txt">Temsilci yazıyor...</span>
+                <span class="vmd-typ-txt">${L.agent_typing}</span>
             </div>
             <div class="vmd-input-area">
                 <div class="vmd-upload-preview" id="vmd-upload-preview" style="display:none"></div>
                 <div class="vmd-input-wrap">
-                    <button class="vmd-attach" id="vmd-attach-btn" title="Resim Gönder"><i class="fas fa-paperclip"></i></button>
+                    <button class="vmd-attach" id="vmd-attach-btn" title="${L.attach_image}"><i class="fas fa-paperclip"></i></button>
                     <input type="file" id="vmd-file-input" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none">
-                    <textarea class="vmd-input" id="vmd-input" placeholder="Mesajınızı yazın..." rows="1"></textarea>
+                    <textarea class="vmd-input" id="vmd-input" placeholder="${L.type_message}" rows="1"></textarea>
                     <button class="vmd-send" id="vmd-send-btn" disabled><i class="fas fa-paper-plane"></i></button>
                 </div>
-                <div class="vmd-powered"><span>Powered by <strong>VMDestek</strong></span></div>
+                <div class="vmd-powered"><span>${L.powered_by} <strong>VMDestek</strong></span></div>
             </div>
         </div>`;
 
@@ -329,18 +341,18 @@
                     <div class="vmd-hdr-icon"><i class="fas fa-headset"></i></div>
                     <div class="vmd-hdr-text">
                         <h2>${company}</h2>
-                        <div class="vmd-status"><span>Sohbet sona erdi</span></div>
+                        <div class="vmd-status"><span>${L.chat_ended}</span></div>
                     </div>
                 </div>
                 <div class="vmd-hdr-actions">
-                    <button class="vmd-hdr-btn" id="vmd-min3" title="Küçült"><i class="fas fa-chevron-down"></i></button>
+                    <button class="vmd-hdr-btn" id="vmd-min3" title="${L.minimize}"><i class="fas fa-chevron-down"></i></button>
                 </div>
                 <div class="vmd-hdr-wave"><svg viewBox="0 0 400 30" preserveAspectRatio="none"><path d="M0,15 C100,25 200,5 300,15 C350,20 380,18 400,15 L400,30 L0,30 Z" fill="white"/></svg></div>
             </div>
             <div class="vmd-body vmd-prechat" style="text-align:center;padding-top:40px">
                 <div class="vmd-emoji">🙏</div>
-                <h3>Teşekkürler!</h3>
-                <p style="margin-bottom:24px">Sohbetiniz sona erdi. Nasıl bir deneyim yaşadınız?</p>
+                <h3>${L.thank_you}</h3>
+                <p style="margin-bottom:24px">${L.rate_experience}</p>
                 <div class="vmd-rating" id="vmd-rating">
                     <button class="vmd-star" data-r="1" onclick="window.__vmd_rate(1)">★</button>
                     <button class="vmd-star" data-r="2" onclick="window.__vmd_rate(2)">★</button>
@@ -349,7 +361,7 @@
                     <button class="vmd-star" data-r="5" onclick="window.__vmd_rate(5)">★</button>
                 </div>
                 <button class="vmd-start-btn" id="vmd-reset" style="margin-top:24px">
-                    <span class="vmd-btn-c"><i class="fas fa-redo"></i> Yeni Sohbet</span>
+                    <span class="vmd-btn-c"><i class="fas fa-redo"></i> ${L.new_chat}</span>
                 </button>
             </div>
         </div>`;
@@ -426,7 +438,7 @@
         if (!name || !email || !message) return;
 
         startBtn.disabled = true;
-        startBtn.innerHTML = '<span class="vmd-btn-c"><i class="fas fa-spinner fa-spin"></i> Gönderiliyor...</span>';
+        startBtn.innerHTML = '<span class="vmd-btn-c"><i class="fas fa-spinner fa-spin"></i> ...</span>';
 
         try {
             const res = await fetch(`${BASE_URL}/api/chat.php?action=start`, {
@@ -442,10 +454,10 @@
                     body: JSON.stringify({ session_id: data.session_id, message })
                 });
                 renderEndScreen();
-            } else throw new Error(data.error || 'Gönderme hatası');
+            } else throw new Error(data.error || L.connection_error);
         } catch (err) {
             startBtn.disabled = false;
-            startBtn.innerHTML = '<span class="vmd-btn-c"><i class="fas fa-paper-plane"></i> Mesaj Gönder</span>';
+            startBtn.innerHTML = `<span class="vmd-btn-c"><i class="fas fa-paper-plane"></i> ${L.send_message}</span>`;
             alert(err.message);
         }
     }
@@ -493,7 +505,7 @@
                 div.innerHTML = `
                     ${showAv ? `<div class="vmd-msg-av">${init}</div>` : ''}
                     <div class="vmd-msg-c">
-                        ${msg.sender_type === 'admin' ? `<span class="vmd-msg-name">${escapeHtml(msg.sender_name || 'Temsilci')}</span>` : ''}
+                        ${msg.sender_type === 'admin' ? `<span class="vmd-msg-name">${escapeHtml(msg.sender_name || L.default_agent)}</span>` : ''}
                         ${bubbleContent}
                         <span class="vmd-msg-time">${formatTime(msg.created_at)}</span>
                     </div>`;
@@ -548,14 +560,14 @@
 
         const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
-            alert('Dosya boyutu çok büyük (max 5MB)');
+            alert(L.file_too_large);
             e.target.value = '';
             return;
         }
 
         const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowed.includes(file.type)) {
-            alert('Sadece resim dosyaları yüklenebilir (jpg, png, gif, webp)');
+            alert(L.only_images);
             e.target.value = '';
             return;
         }
@@ -572,7 +584,7 @@
             preview.innerHTML = `
                 <img src="${e.target.result}" alt="Önizleme">
                 <div class="vmd-preview-info">${escapeHtml(file.name)}<br><small>${(file.size / 1024).toFixed(0)} KB</small></div>
-                <button class="vmd-preview-remove" id="vmd-preview-cancel" title="İptal"><i class="fas fa-times"></i></button>
+                <button class="vmd-preview-remove" id="vmd-preview-cancel" title="${L.cancel}"><i class="fas fa-times"></i></button>
             `;
             preview.style.display = 'flex';
             document.getElementById('vmd-preview-cancel').addEventListener('click', cancelUpload);
@@ -763,16 +775,48 @@
     function formatTime(dateStr) {
         if (!dateStr) return '';
         const d = new Date(dateStr);
-        return d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+        const locale = config.language === 'ar' ? 'ar-SA' : config.language === 'en' ? 'en-US' : 'tr-TR';
+        return d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
     }
 
     // ═══════ INIT ═══════
+    // Default language strings (Turkish fallback)
+    let L = {
+        online: 'Çevrimiçi', offline: 'Çevrimdışı', hello: 'Merhaba!', leave_message: 'Mesaj Bırakın',
+        default_welcome: 'Size nasıl yardımcı olabiliriz?', default_offline: 'Şu anda çevrimdışıyız. Lütfen mesajınızı bırakın, en kısa sürede dönüş yapacağız.',
+        name_label: 'Adınız', name_placeholder: 'Adınızı girin', email_label: 'E-posta',
+        email_optional: '(opsiyonel)', email_required: '(gerekli)', email_placeholder: 'E-posta adresiniz',
+        message_label: 'Mesajınız', message_placeholder: 'Mesajınızı yazın...', start_chat: 'Sohbet Başlat',
+        send_message: 'Mesaj Gönder', connected: 'Bağlandı', minimize: 'Küçült', end_chat: 'Sohbeti Bitir',
+        agent_typing: 'Temsilci yazıyor...', attach_image: 'Resim Gönder', type_message: 'Mesajınızı yazın...',
+        chat_ended: 'Sohbet sona erdi', thank_you: 'Teşekkürler!', rate_experience: 'Sohbetiniz sona erdi. Nasıl bir deneyim yaşadınız?',
+        new_chat: 'Yeni Sohbet', powered_by: 'Powered by', default_agent: 'Temsilci',
+        file_too_large: 'Dosya boyutu çok büyük (max 5MB)', only_images: 'Sadece resim dosyaları yüklenebilir (jpg, png, gif, webp)',
+        cancel: 'İptal', greeting_online: 'Merhaba! Size yardımcı olabilir miyiz?',
+        greeting_offline: 'Şu anda çevrimdışıyız. Mesajınızı bırakabilirsiniz.',
+        offline_success: 'Mesajınız alındı. En kısa sürede dönüş yapacağız. Teşekkürler!',
+        connection_error: 'Bağlantı hatası. Lütfen tekrar deneyin.', image: 'Resim', dir: 'ltr'
+    };
+
     function fetchConfig() {
         fetch(`${BASE_URL}/api/chat.php?action=status`)
             .then(r => r.json())
             .then(data => {
                 if (data.success && data.config) {
                     config = data.config;
+
+                    // Load language strings from API
+                    if (data.lang && typeof data.lang === 'object') {
+                        L = Object.assign(L, data.lang);
+                    }
+
+                    // RTL support
+                    if (L.dir === 'rtl') {
+                        widget.setAttribute('dir', 'rtl');
+                    } else {
+                        widget.removeAttribute('dir');
+                    }
+
                     const c1 = config.widget_color || '#667eea';
                     const c2 = config.widget_gradient_end || '#764ba2';
 
@@ -783,9 +827,9 @@
 
                     // Update greeting
                     if (config.is_online) {
-                        greeting.innerHTML = `<button class="vmd-close-g" onclick="this.parentElement.classList.remove('show')">&times;</button>${escapeHtml(config.welcome_message || 'Merhaba! Size yardımcı olabilir miyiz?')} 💬`;
+                        greeting.innerHTML = `<button class="vmd-close-g" onclick="this.parentElement.classList.remove('show')">&times;</button>${escapeHtml(config.welcome_message || L.greeting_online)} 💬`;
                     } else {
-                        greeting.innerHTML = `<button class="vmd-close-g" onclick="this.parentElement.classList.remove('show')">&times;</button>📨 ${escapeHtml(config.offline_message || 'Şu anda çevrimdışıyız. Mesajınızı bırakabilirsiniz.')}`;
+                        greeting.innerHTML = `<button class="vmd-close-g" onclick="this.parentElement.classList.remove('show')">&times;</button>📨 ${escapeHtml(config.offline_message || L.greeting_offline)}`;
                     }
 
                     // Render widget
