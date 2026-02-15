@@ -20,20 +20,20 @@ if (!isset($_SESSION['admin_id'])) {
         .settings-page {
             height: 100vh;
             overflow-y: auto;
-            padding: 80px 40px 40px;
+            padding: 80px 40px 60px;
         }
 
         .settings-header {
             display: flex;
             align-items: center;
             gap: 16px;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
         }
 
         .settings-header .back-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
             border: 1px solid var(--border);
             background: var(--bg-glass);
             color: var(--text-muted);
@@ -49,17 +49,96 @@ if (!isset($_SESSION['admin_id'])) {
         .settings-header .back-btn:hover {
             background: var(--bg-card-hover);
             color: var(--text-primary);
+            border-color: var(--accent);
         }
 
         .settings-header h1 {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .settings-header .header-badge {
+            font-size: 11px;
+            padding: 4px 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Section Headers */
+        .section-divider {
+            max-width: 1200px;
+            margin: 40px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .section-divider:first-of-type {
+            margin-top: 0;
+        }
+
+        .section-divider .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .section-divider .section-icon.purple {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .section-divider .section-icon.emerald {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .section-divider .section-icon.amber {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .section-divider .section-icon.rose {
+            background: linear-gradient(135deg, #f43f5e, #e11d48);
+        }
+
+        .section-divider .section-icon.sky {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        }
+
+        .section-divider .section-text h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .section-divider .section-text p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border), transparent);
         }
 
         .settings-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
-            gap: 24px;
+            gap: 20px;
             max-width: 1200px;
         }
 
@@ -69,10 +148,16 @@ if (!isset($_SESSION['admin_id'])) {
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             padding: 28px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .settings-card:hover {
+            border-color: rgba(102, 126, 234, 0.15);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
         }
 
         .settings-card h2 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             margin-bottom: 20px;
             display: flex;
@@ -90,6 +175,34 @@ if (!isset($_SESSION['admin_id'])) {
             justify-content: center;
             font-size: 14px;
             color: white;
+        }
+
+        /* Save Bar */
+        .save-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 40px;
+            background: rgba(15, 15, 30, 0.85);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .save-bar .save-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-right: auto;
+        }
+
+        .save-bar .save-hint i {
+            margin-right: 6px;
+            color: var(--accent);
         }
 
         .field-group {
@@ -644,8 +757,17 @@ if (!isset($_SESSION['admin_id'])) {
         <div class="settings-header">
             <a href="index.php" class="back-btn"><i class="fas fa-arrow-left"></i></a>
             <h1>Ayarlar</h1>
+            <span class="header-badge" id="versionBadge">v...</span>
         </div>
 
+        <!-- ═══════ SECTION: Widget & Görünüm ═══════ -->
+        <div class="section-divider">
+            <div class="section-icon purple"><i class="fas fa-paint-brush"></i></div>
+            <div class="section-text">
+                <h3>Widget & Görünüm</h3>
+                <p>Widget renkleri, şirket adı ve konum ayarları</p>
+            </div>
+        </div>
         <div class="settings-grid">
             <!-- Widget Appearance -->
             <div class="settings-card">
@@ -685,6 +807,31 @@ if (!isset($_SESSION['admin_id'])) {
                 </div>
             </div>
 
+            <!-- Working Hours -->
+            <div class="settings-card">
+                <h2><i class="fas fa-clock"></i> Çalışma Saatleri</h2>
+
+                <div class="field-group">
+                    <label>Başlangıç Saati</label>
+                    <input type="time" id="workingHoursStart" value="09:00">
+                </div>
+
+                <div class="field-group">
+                    <label>Bitiş Saati</label>
+                    <input type="time" id="workingHoursEnd" value="18:00">
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════ SECTION: Mesajlar & İçerik ═══════ -->
+        <div class="section-divider">
+            <div class="section-icon emerald"><i class="fas fa-comment-dots"></i></div>
+            <div class="section-text">
+                <h3>Mesajlar & İçerik</h3>
+                <p>Hoşgeldin mesajı, otomatik yanıtlar ve hazır cevaplar</p>
+            </div>
+        </div>
+        <div class="settings-grid">
             <!-- Messages -->
             <div class="settings-card">
                 <h2><i class="fas fa-comment-dots"></i> Mesajlar</h2>
@@ -713,27 +860,6 @@ if (!isset($_SESSION['admin_id'])) {
                 </div>
             </div>
 
-            <!-- Embed Code -->
-            <div class="settings-card">
-                <h2><i class="fas fa-code"></i> Embed Kodu</h2>
-                <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">
-                    Aşağıdaki kodu web sitenizin <code>&lt;/body&gt;</code> etiketinden önce yapıştırın:
-                </p>
-                <div class="embed-code" id="embedCode">
-                    <button class="copy-btn" onclick="copyEmbedCode()"><i class="fas fa-copy"></i> Kopyala</button>
-                    <span id="embedCodeText"></span>
-                </div>
-
-                <p style="font-size:12px;color:var(--text-muted);margin-top:12px">
-                    <i class="fas fa-info-circle" style="margin-right:4px"></i>
-                    Veya iframe ile doğrudan gömebilirsiniz:
-                </p>
-                <div class="embed-code" id="iframeCode" style="margin-top:8px">
-                    <button class="copy-btn" onclick="copyIframeCode()"><i class="fas fa-copy"></i> Kopyala</button>
-                    <span id="iframeCodeText"></span>
-                </div>
-            </div>
-
             <!-- Canned Responses -->
             <div class="settings-card">
                 <h2><i class="fas fa-bolt"></i> Hazır Yanıtlar</h2>
@@ -755,22 +881,48 @@ if (!isset($_SESSION['admin_id'])) {
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Working Hours -->
-            <div class="settings-card">
-                <h2><i class="fas fa-clock"></i> Çalışma Saatleri</h2>
-
-                <div class="field-group">
-                    <label>Başlangıç Saati</label>
-                    <input type="time" id="workingHoursStart" value="09:00">
+        <!-- ═══════ SECTION: Entegrasyon ═══════ -->
+        <div class="section-divider">
+            <div class="section-icon amber"><i class="fas fa-code"></i></div>
+            <div class="section-text">
+                <h3>Entegrasyon</h3>
+                <p>Widget embed kodları ve kurulum bilgileri</p>
+            </div>
+        </div>
+        <div class="settings-grid">
+            <!-- Embed Code -->
+            <div class="settings-card" style="grid-column: 1 / -1">
+                <h2><i class="fas fa-code"></i> Embed Kodu</h2>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">
+                    Aşağıdaki kodu web sitenizin <code>&lt;/body&gt;</code> etiketinden önce yapıştırın:
+                </p>
+                <div class="embed-code" id="embedCode">
+                    <button class="copy-btn" onclick="copyEmbedCode()"><i class="fas fa-copy"></i> Kopyala</button>
+                    <span id="embedCodeText"></span>
                 </div>
 
-                <div class="field-group">
-                    <label>Bitiş Saati</label>
-                    <input type="time" id="workingHoursEnd" value="18:00">
+                <p style="font-size:12px;color:var(--text-muted);margin-top:12px">
+                    <i class="fas fa-info-circle" style="margin-right:4px"></i>
+                    Veya iframe ile doğrudan gömebilirsiniz:
+                </p>
+                <div class="embed-code" id="iframeCode" style="margin-top:8px">
+                    <button class="copy-btn" onclick="copyIframeCode()"><i class="fas fa-copy"></i> Kopyala</button>
+                    <span id="iframeCodeText"></span>
                 </div>
             </div>
+        </div>
 
+        <!-- ═══════ SECTION: Yönetim ═══════ -->
+        <div class="section-divider">
+            <div class="section-icon rose"><i class="fas fa-shield-alt"></i></div>
+            <div class="section-text">
+                <h3>Yönetim</h3>
+                <p>Kullanıcı rolleri, erişim ve sistem yönetimi</p>
+            </div>
+        </div>
+        <div class="settings-grid">
             <!-- Admin Users -->
             <div class="settings-card" style="grid-column: 1 / -1">
                 <h2><i class="fas fa-users-cog"></i> Kullanıcı Yönetimi</h2>
@@ -805,7 +957,17 @@ if (!isset($_SESSION['admin_id'])) {
                     </div>
                 </div>
             </div>
+        </div>
 
+        <!-- ═══════ SECTION: Sistem ═══════ -->
+        <div class="section-divider">
+            <div class="section-icon sky"><i class="fas fa-cloud-download-alt"></i></div>
+            <div class="section-text">
+                <h3>Sistem</h3>
+                <p>Otomatik güncelleme ve sürüm kontrolü</p>
+            </div>
+        </div>
+        <div class="settings-grid" style="margin-bottom:80px">
             <!-- Auto Update -->
             <div class="settings-card update-card" style="grid-column: 1 / -1">
                 <h2><i class="fas fa-cloud-download-alt"></i> Sistem Güncellemesi</h2>
@@ -830,15 +992,16 @@ if (!isset($_SESSION['admin_id'])) {
 
                 <div class="update-result" id="updateResult"></div>
             </div>
-
-            <!-- Save Button -->
-            <div class="settings-card" style="display:flex;align-items:center;justify-content:center">
-                <button class="btn-save" onclick="saveAllSettings()">
-                    <i class="fas fa-save" style="margin-right:8px"></i>
-                    Ayarları Kaydet
-                </button>
-            </div>
         </div>
+    </div>
+
+    <!-- Fixed Save Bar -->
+    <div class="save-bar">
+        <span class="save-hint"><i class="fas fa-info-circle"></i> Değişikliklerinizi kaydetmeyi unutmayın</span>
+        <button class="btn-save" onclick="saveAllSettings()">
+            <i class="fas fa-save" style="margin-right:8px"></i>
+            Ayarları Kaydet
+        </button>
     </div>
 
     <div class="toast" id="toast">
@@ -1149,6 +1312,7 @@ if (!isset($_SESSION['admin_id'])) {
                 const data = await res.json();
                 document.getElementById('currentVersion').textContent = 'v' + data.version;
                 document.getElementById('updateStatus').textContent = `Sürüm: ${data.version} | Build: ${data.build}`;
+                document.getElementById('versionBadge').textContent = 'v' + data.version;
             } catch (err) {
                 document.getElementById('currentVersion').textContent = 'v?';
                 document.getElementById('updateStatus').textContent = 'Sürüm bilgisi okunamadı';
