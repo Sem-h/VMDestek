@@ -67,6 +67,51 @@ try {
         echo "✅ Hazır yanıt '{$shortcut}' düzeltildi.\n";
     }
 
+    // 5. Messages tablosundaki bozuk mesajları düzelt
+    echo "\n--- Mesajlar Tablosu Düzeltme ---\n";
+
+    // Bilinen sistem/otomatik mesajları düzelt
+    $msgFixes = [
+        // Bozuk pattern => Doğru metin
+        'Mesaj%n%z al%nd%' => 'Mesajınız alındı. Bir temsilci en kısa sürede size bağlanacak.',
+        'Merhaba! Size nas%l yard%mc% olabiliriz' => 'Merhaba! Size nasıl yardımcı olabiliriz?',
+        'Ho%geldiniz' => 'Merhaba! Hoş geldiniz. Size nasıl yardımcı olabilirim?',
+        'L%tfen bir dakika bekleyin' => 'Lütfen bir dakika bekleyin, kontrol ediyorum.',
+        'Yard%mc% olabildi%ime sevindim' => 'Yardımcı olabildiğime sevindim. Başka bir sorunuz var mı?',
+        'Detayl% bilgi i%in bize' => 'Detaylı bilgi için bize info@sirket.com adresinden ulaşabilirsiniz.',
+        '%yi g%nler dilerim' => 'İyi günler dilerim! Tekrar bekleriz.',
+    ];
+
+    $fixedCount = 0;
+    foreach ($msgFixes as $pattern => $correctText) {
+        $likePattern = str_replace('%', '?', $pattern);
+        // LIKE ile bozuk mesajları bul
+        $stmt = $pdo->prepare("UPDATE `messages` SET `message` = ? WHERE `message` LIKE ?");
+        $stmt->execute([$correctText, '%' . $likePattern . '%']);
+        $affected = $stmt->rowCount();
+        if ($affected > 0) {
+            echo "✅ {$affected} mesaj düzeltildi (pattern: '{$likePattern}...')\n";
+            $fixedCount += $affected;
+        }
+    }
+
+    // Genel olarak ? içeren mesajları bul ve raporla
+    $brokenMsgs = $pdo->query("SELECT id, message, sender_type FROM messages WHERE message LIKE '%?%' ORDER BY id")->fetchAll();
+    if (count($brokenMsgs) > 0) {
+        echo "\nℹ️ Hala " . count($brokenMsgs) . " adet '?' içeren mesaj var:\n";
+        foreach ($brokenMsgs as $m) {
+            $preview = mb_substr($m['message'], 0, 80, 'UTF-8');
+            echo "   #{$m['id']} [{$m['sender_type']}]: {$preview}...\n";
+        }
+        echo "\n💡 Bu mesajlar normal soru işareti içeriyor olabilir veya düzeltilemez bozuk veri olabilir.\n";
+    } else {
+        echo "✅ Mesajlar tablosunda bozuk karakter kalmadı.\n";
+    }
+
+    if ($fixedCount > 0) {
+        echo "\n✅ Toplam {$fixedCount} mesaj düzeltildi.\n";
+    }
+
     echo "\n🎉 Tüm düzeltmeler tamamlandı!\n";
     echo "⚠️ GÜVENLİK: Bu dosyayı sunucudan silmeyi unutmayın!\n";
     echo "</pre>";
