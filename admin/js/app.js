@@ -102,14 +102,14 @@ function renderConversations() {
     }
 
     if (filtered.length === 0) {
-        list.innerHTML = '<div class="empty-state" id="emptyState"><i class="fas fa-inbox"></i><p>Henüz konuşma yok</p></div>';
+        list.innerHTML = '<div class="empty-state" id="emptyState"><i class="fas fa-inbox"></i><p>' + (LANG.no_conversations || 'Henüz konuşma yok') + '</p></div>';
         return;
     }
 
     list.innerHTML = filtered.map(conv => {
         const initials = getInitials(conv.visitor_name);
         const time = formatTime(conv.last_message_at || conv.started_at);
-        const preview = conv.last_message ? truncate(conv.last_message, 40) : 'Yeni konuşma';
+        const preview = conv.last_message ? truncate(conv.last_message, 40) : (LANG.new_conversation || 'Yeni konuşma');
         const isActive = conv.id == currentConversationId;
         const unread = parseInt(conv.unread_count) || 0;
         const statusClass = conv.status === 'waiting' ? 'waiting' : (conv.status === 'closed' ? 'closed' : '');
@@ -402,7 +402,7 @@ async function setAdminTyping(typing) {
 // ============ ACTIONS ============
 async function closeConversation() {
     if (!currentConversationId) return;
-    if (!confirm('Bu konuşmayı kapatmak istediğinize emin misiniz?')) return;
+    if (!confirm(LANG.confirm_close || 'Bu konuşmayı kapatmak istediğinize emin misiniz?')) return;
 
     try {
         const res = await fetch(`${SITE_URL}/api/admin.php?action=close`, {
@@ -436,7 +436,7 @@ async function showTransferModal() {
         if (data.success && data.admins) {
             const otherAgents = data.admins.filter(a => a.id != ADMIN_ID);
             if (otherAgents.length === 0) {
-                listEl.innerHTML = '<div class="popup-empty">Başka temsilci bulunmuyor</div>';
+                listEl.innerHTML = '<div class="popup-empty">' + (LANG.no_other_agents || 'Başka temsilci bulunmuyor') + '</div>';
             } else {
                 listEl.innerHTML = otherAgents.map(a => `
                     <div class="transfer-agent-item" onclick="transferToAgent(${a.id}, '${a.name.replace(/'/g, "\\'")}')">
@@ -445,7 +445,7 @@ async function showTransferModal() {
                             <div class="agent-name">${a.name}</div>
                             <div class="agent-role-label">
                                 <span class="status-dot ${a.is_online == 1 ? 'online' : ''}" style="display:inline-block;width:6px;height:6px;vertical-align:middle;margin-right:4px"></span>
-                                ${a.is_online == 1 ? 'Çevrimiçi' : 'Çevrimdışı'} · ${a.role === 'admin' ? 'Admin' : 'Operatör'}
+                                ${a.is_online == 1 ? (LANG.online_status || 'Çevrimiçi') : (LANG.offline_status || 'Çevrimdışı')} · ${a.role === 'admin' ? 'Admin' : (LANG.operator || 'Operatör')}
                             </div>
                         </div>
                     </div>
@@ -464,7 +464,7 @@ function hideTransferModal(e) {
 
 async function transferToAgent(targetAdminId, targetName) {
     if (!currentConversationId) return;
-    if (!confirm(`Görüşmeyi "${targetName}" temsilcisine aktarmak istediğinize emin misiniz?`)) return;
+    if (!confirm((LANG.confirm_transfer || 'Görüşmeyi "{name}" temsilcisine aktarmak istediğinize emin misiniz?').replace('{name}', targetName))) return;
 
     try {
         const res = await fetch(`${SITE_URL}/api/admin.php?action=transfer`, {
@@ -492,7 +492,7 @@ async function transferToAgent(targetAdminId, targetName) {
 // ============ LEAVE CONVERSATION ============
 async function leaveConversation() {
     if (!currentConversationId) return;
-    if (!confirm('Bu görüşmeden ayrılmak istediğinize emin misiniz?')) return;
+    if (!confirm(LANG.confirm_leave || 'Bu görüşmeden ayrılmak istediğinize emin misiniz?')) return;
 
     try {
         const res = await fetch(`${SITE_URL}/api/admin.php?action=leave`, {
@@ -560,7 +560,7 @@ async function loadNotes() {
 function renderNotes(notes) {
     const container = document.getElementById('notesList');
     if (!notes || notes.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-sticky-note"></i><p>Henüz not eklenmemiş</p></div>';
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-sticky-note"></i><p>' + (LANG.no_notes || 'Henüz not eklenmemiş') + '</p></div>';
         return;
     }
     container.innerHTML = notes.map(n => `
@@ -568,7 +568,7 @@ function renderNotes(notes) {
             <div class="note-text">${escapeHtml(n.note)}</div>
             <div class="note-meta">
                 <span><i class="fas fa-user"></i> ${escapeHtml(n.admin_name)} · ${formatDateTime(n.created_at)}</span>
-                <button class="note-delete" onclick="deleteNote(${n.id})" title="Sil"><i class="fas fa-trash"></i></button>
+                <button class="note-delete" onclick="deleteNote(${n.id})" title="${LANG.delete || 'Sil'}"><i class="fas fa-trash"></i></button>
             </div>
         </div>
     `).join('');
@@ -596,7 +596,7 @@ async function saveNote() {
 }
 
 async function deleteNote(id) {
-    if (!confirm('Bu notu silmek istediğinize emin misiniz?')) return;
+    if (!confirm(LANG.confirm_delete_note || 'Bu notu silmek istediğinize emin misiniz?')) return;
     try {
         await fetch(`${SITE_URL}/api/admin.php?action=note_delete`, {
             method: 'POST',
@@ -620,7 +620,7 @@ async function loadReminders() {
 function renderReminders(reminders) {
     const container = document.getElementById('remindersList');
     if (!reminders || reminders.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-bell"></i><p>Henüz hatırlatma eklenmemiş</p></div>';
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-bell"></i><p>' + (LANG.no_reminders || 'Henüz hatırlatma eklenmemiş') + '</p></div>';
         return;
     }
 
@@ -638,12 +638,12 @@ function renderReminders(reminders) {
                 <div class="reminder-time ${timeClass}">
                     <i class="fas fa-${isOverdue ? 'exclamation-triangle' : 'clock'}"></i>
                     ${formatDateTime(r.remind_at)}
-                    ${isOverdue ? ' (gecikmiş!)' : ''}
+                    ${isOverdue ? ' (' + (LANG.overdue || 'gecikmiş!') + ')' : ''}
                 </div>
             </div>
             <div class="reminder-actions">
-                ${!r.is_completed ? `<button class="complete" onclick="completeReminder(${r.id})" title="Tamamlandı"><i class="fas fa-check"></i></button>` : ''}
-                <button class="delete" onclick="deleteReminder(${r.id})" title="Sil"><i class="fas fa-trash"></i></button>
+                ${!r.is_completed ? `<button class="complete" onclick="completeReminder(${r.id})" title="${LANG.completed || 'Tamamlandı'}"><i class="fas fa-check"></i></button>` : ''}
+                <button class="delete" onclick="deleteReminder(${r.id})" title="${LANG.delete || 'Sil'}"><i class="fas fa-trash"></i></button>
             </div>
         </div>`;
     }).join('');
@@ -656,7 +656,7 @@ async function saveReminder() {
     const remindAt = dateInput.value;
 
     if (!title || !remindAt || !currentConversationId) {
-        alert('Başlık ve tarih gerekli');
+        alert(LANG.title_date_required || 'Başlık ve tarih gerekli');
         return;
     }
 
@@ -691,7 +691,7 @@ async function completeReminder(id) {
 }
 
 async function deleteReminder(id) {
-    if (!confirm('Bu hatırlatmayı silmek istediğinize emin misiniz?')) return;
+    if (!confirm(LANG.confirm_delete_reminder || 'Bu hatırlatmayı silmek istediğinize emin misiniz?')) return;
     try {
         await fetch(`${SITE_URL}/api/admin.php?action=reminder_delete`, {
             method: 'POST',
@@ -726,7 +726,7 @@ function checkReminders(reminders) {
                 </div>
             </div>
             <div class="reminder-actions">
-                <button class="complete" onclick="completeReminder(${r.id});this.closest('.reminder-item').remove();" title="Tamamlandı"><i class="fas fa-check"></i></button>
+                <button class="complete" onclick="completeReminder(${r.id});this.closest('.reminder-item').remove();" title="${LANG.completed || 'Tamamlandı'}"><i class="fas fa-check"></i></button>
             </div>
         </div>
     `).join('');
@@ -862,7 +862,7 @@ function renderVisitors() {
     }
 
     if (filtered.length === 0) {
-        list.innerHTML = '<div class="empty-state" id="emptyState"><i class="fas fa-eye"></i><p>Aktif ziyaretçi yok</p></div>';
+        list.innerHTML = '<div class="empty-state" id="emptyState"><i class="fas fa-eye"></i><p>' + (LANG.no_active_visitors || 'Aktif ziyaretçi yok') + '</p></div>';
         return;
     }
 
@@ -873,7 +873,7 @@ function renderVisitors() {
         const pagePath = (() => {
             try { return new URL(pageUrl).pathname; } catch (e) { return pageUrl; }
         })();
-        const pageTitle = v.page_title || pagePath || 'Bilinmiyor';
+        const pageTitle = v.page_title || pagePath || (LANG.unknown || 'Bilinmiyor');
         const uid = (v.visitor_uid || '').substring(0, 6).toUpperCase();
 
         return `
@@ -884,7 +884,7 @@ function renderVisitors() {
                 </div>
                 <div class="conv-info">
                     <div class="conv-name-row">
-                        <span class="conv-name">Ziyaretçi #${uid}</span>
+                        <span class="conv-name">${LANG.visitor || 'Ziyaretçi'} #${uid}</span>
                         <span class="conv-time visitor-duration"><i class="fas fa-clock"></i> ${duration}</span>
                     </div>
                     <div class="conv-preview visitor-page">
@@ -902,11 +902,14 @@ function renderVisitors() {
 }
 
 function formatDuration(seconds) {
-    if (seconds < 60) return seconds + 'sn';
-    if (seconds < 3600) return Math.floor(seconds / 60) + 'dk';
+    const sn = LANG.seconds_short || 'sn';
+    const dk = LANG.minutes_short || 'dk';
+    const sa = LANG.hours_short || 'sa';
+    if (seconds < 60) return seconds + sn;
+    if (seconds < 3600) return Math.floor(seconds / 60) + dk;
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
-    return h + 'sa ' + m + 'dk';
+    return h + sa + ' ' + m + dk;
 }
 
 function startVisitorPolling() {
@@ -955,13 +958,13 @@ async function loadOnlineAgents() {
             countEl.textContent = data.agents.length;
 
             if (data.agents.length === 0) {
-                listEl.innerHTML = '<div class="popup-empty">Kimse çevrimiçi değil</div>';
+                listEl.innerHTML = '<div class="popup-empty">' + (LANG.nobody_online || 'Kimse çevrimiçi değil') + '</div>';
             } else {
                 listEl.innerHTML = data.agents.map(a => `
                     <div class="popup-agent">
                         <span class="status-dot online"></span>
                         <span>${a.name}</span>
-                        <span class="agent-role">${a.role === 'admin' ? 'Admin' : 'Operatör'}</span>
+                        <span class="agent-role">${a.role === 'admin' ? 'Admin' : (LANG.operator || 'Operatör')}</span>
                     </div>
                 `).join('');
             }
@@ -1074,16 +1077,18 @@ function formatTime(dateStr) {
     const date = new Date(dateStr);
     const now = new Date();
     const diff = now - date;
+    const locale = document.documentElement.lang || 'tr';
 
-    if (diff < 60000) return 'Şimdi';
-    if (diff < 3600000) return Math.floor(diff / 60000) + 'dk';
-    if (diff < 86400000) return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-    return date.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' });
+    if (diff < 60000) return (LANG.minutes_short ? '~1' + LANG.minutes_short : 'Şimdi');
+    if (diff < 3600000) return Math.floor(diff / 60000) + (LANG.minutes_short || 'dk');
+    if (diff < 86400000) return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' });
 }
 
 function formatDateTime(dateStr) {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleString('tr-TR');
+    const locale = document.documentElement.lang || 'tr';
+    return new Date(dateStr).toLocaleString(locale);
 }
 
 function formatMessage(text) {
@@ -1113,7 +1118,7 @@ function parseBrowser(ua) {
     if (ua.includes('Firefox')) return 'Firefox';
     if (ua.includes('Safari')) return 'Safari';
     if (ua.includes('Edge')) return 'Edge';
-    return 'Diğer';
+    return 'Other';
 }
 
 // ============ SYSTEM WATERMARK ============

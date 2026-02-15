@@ -1,19 +1,24 @@
 <?php
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../lang.php';
 
 // If already logged in, redirect to dashboard
 if (isset($_SESSION['admin_id'])) {
     header('Location: index.php');
     exit;
 }
+
+$L = getAdminLang();
+$langCode = getSystemLanguage();
+$dir = isset($L['dir']) ? $L['dir'] : 'ltr';
 ?>
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="<?= $langCode ?>" dir="<?= $dir ?>">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş - VMDestek Admin</title>
+    <title><?= $L['login_title'] ?? 'Giriş - VMDestek Admin' ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -139,6 +144,11 @@ if (isset($_SESSION['admin_id'])) {
             transition: color 0.3s;
         }
 
+        [dir="rtl"] .input-wrapper i {
+            left: auto;
+            right: 16px;
+        }
+
         .input-wrapper input {
             width: 100%;
             padding: 14px 16px 14px 48px;
@@ -150,6 +160,10 @@ if (isset($_SESSION['admin_id'])) {
             font-family: inherit;
             transition: all 0.3s;
             outline: none;
+        }
+
+        [dir="rtl"] .input-wrapper input {
+            padding: 14px 48px 14px 16px;
         }
 
         .input-wrapper input:focus {
@@ -299,7 +313,7 @@ if (isset($_SESSION['admin_id'])) {
                     <i class="fas fa-headset"></i>
                 </div>
                 <h1>VMDestek</h1>
-                <p>Admin paneline giriş yapın</p>
+                <p><?= $L['login_subtitle'] ?? 'Admin paneline giriş yapın' ?></p>
             </div>
 
             <div class="error-message" id="errorMsg">
@@ -309,24 +323,27 @@ if (isset($_SESSION['admin_id'])) {
 
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label>Kullanıcı Adı</label>
+                    <label><?= $L['username_label'] ?? 'Kullanıcı Adı' ?></label>
                     <div class="input-wrapper">
-                        <input type="text" id="username" placeholder="Kullanıcı adınızı girin" required autofocus>
+                        <input type="text" id="username"
+                            placeholder="<?= $L['username_placeholder'] ?? 'Kullanıcı adınızı girin' ?>" required
+                            autofocus>
                         <i class="fas fa-user"></i>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Şifre</label>
+                    <label><?= $L['password_label'] ?? 'Şifre' ?></label>
                     <div class="input-wrapper">
-                        <input type="password" id="password" placeholder="Şifrenizi girin" required>
+                        <input type="password" id="password"
+                            placeholder="<?= $L['password_placeholder'] ?? 'Şifrenizi girin' ?>" required>
                         <i class="fas fa-lock"></i>
                     </div>
                 </div>
 
                 <button type="submit" class="btn-login" id="btnLogin">
                     <span class="spinner"></span>
-                    <span class="btn-text">Giriş Yap</span>
+                    <span class="btn-text"><?= $L['login_btn'] ?? 'Giriş Yap' ?></span>
                 </button>
             </form>
 
@@ -338,6 +355,8 @@ if (isset($_SESSION['admin_id'])) {
     </div>
 
     <script>
+        const LANG = <?= json_encode($L, JSON_UNESCAPED_UNICODE) ?>;
+
         // Create floating particles
         const particlesContainer = document.getElementById('particles');
         for (let i = 0; i < 20; i++) {
@@ -374,10 +393,10 @@ if (isset($_SESSION['admin_id'])) {
                 const data = await res.json();
 
                 if (data.success) {
-                    btn.innerHTML = '<i class="fas fa-check" style="margin-right:8px"></i> Giriş Başarılı';
+                    btn.innerHTML = '<i class="fas fa-check" style="margin-right:8px"></i> ' + (LANG.login_success || 'Giriş Başarılı');
                     setTimeout(() => window.location.href = 'index.php', 500);
                 } else {
-                    throw new Error(data.error || 'Giriş başarısız');
+                    throw new Error(data.error || LANG.login_failed || 'Giriş başarısız');
                 }
             } catch (err) {
                 errorText.textContent = err.message;

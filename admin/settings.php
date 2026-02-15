@@ -1,18 +1,23 @@
 <?php
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../lang.php';
 
 if (!isset($_SESSION['admin_id'])) {
     header('Location: login.php');
     exit;
 }
+
+$L = getAdminLang();
+$langCode = getSystemLanguage();
+$dir = isset($L['dir']) ? $L['dir'] : 'ltr';
 ?>
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="<?= $langCode ?>" dir="<?= $dir ?>">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ayarlar - VMDestek Admin</title>
+    <title><?= $L['settings_page_title'] ?? 'Ayarlar - VMDestek Admin' ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -811,40 +816,40 @@ if (!isset($_SESSION['admin_id'])) {
         <!-- ═══════ LEFT SIDEBAR ═══════ -->
         <nav class="settings-nav">
             <div class="nav-header">
-                <h2>Ayarlar</h2>
+                <h2><?= $L['settings'] ?? 'Ayarlar' ?></h2>
                 <span class="version-tag" id="versionBadge">v...</span>
             </div>
 
             <div class="nav-item active" onclick="switchTab('appearance', this)">
                 <div class="nav-icon c-purple"><i class="fas fa-palette"></i></div>
-                <span class="nav-label">Görünüm</span>
+                <span class="nav-label"><?= $L['appearance'] ?? 'Görünüm' ?></span>
             </div>
             <div class="nav-item" onclick="switchTab('messages', this)">
                 <div class="nav-icon c-emerald"><i class="fas fa-comment-dots"></i></div>
-                <span class="nav-label">Mesajlar</span>
+                <span class="nav-label"><?= $L['messages_tab'] ?? 'Mesajlar' ?></span>
             </div>
             <div class="nav-item" onclick="switchTab('canned', this)">
                 <div class="nav-icon c-amber"><i class="fas fa-bolt"></i></div>
-                <span class="nav-label">Hazır Yanıtlar</span>
+                <span class="nav-label"><?= $L['canned_tab'] ?? 'Hazır Yanıtlar' ?></span>
             </div>
             <div class="nav-item" onclick="switchTab('embed', this)">
                 <div class="nav-icon c-sky"><i class="fas fa-code"></i></div>
-                <span class="nav-label">Entegrasyon</span>
+                <span class="nav-label"><?= $L['integrations_tab'] ?? 'Entegrasyon' ?></span>
             </div>
             <div class="nav-item" onclick="switchTab('users', this)">
                 <div class="nav-icon c-rose"><i class="fas fa-users-cog"></i></div>
-                <span class="nav-label">Kullanıcılar</span>
+                <span class="nav-label"><?= $L['users_tab'] ?? 'Kullanıcılar' ?></span>
             </div>
             <div class="nav-item" onclick="switchTab('update', this)">
                 <div class="nav-icon c-sky"><i class="fas fa-cloud-download-alt"></i></div>
-                <span class="nav-label">Güncelleme</span>
+                <span class="nav-label"><?= $L['updates_tab'] ?? 'Güncelleme' ?></span>
             </div>
 
             <div class="nav-spacer"></div>
 
             <div class="nav-footer">
                 <button class="btn-save-nav" onclick="saveAllSettings()">
-                    <i class="fas fa-save"></i> Ayarları Kaydet
+                    <i class="fas fa-save"></i> <?= $L['save_settings'] ?? 'Ayarları Kaydet' ?>
                 </button>
                 <a href="index.php" class="btn-back-nav">
                     <i class="fas fa-arrow-left"></i> Panele Dön
@@ -858,15 +863,15 @@ if (!isset($_SESSION['admin_id'])) {
             <!-- TAB: Görünüm -->
             <div class="tab-panel active" id="tab-appearance">
                 <div class="panel-header">
-                    <h1>Görünüm Ayarları</h1>
-                    <p>Widget renkleri, şirket bilgileri ve konum tercihlerini yapılandırın</p>
+                    <h1><?= $L['appearance'] ?? 'Görünüm' ?></h1>
+                    <p><?= $L['widget_colors'] ?? 'Widget renkleri' ?></p>
                 </div>
 
                 <div class="form-card">
-                    <div class="form-card-title">Renk Teması</div>
+                    <div class="form-card-title"><?= $L['widget_colors'] ?? 'Widget Renkleri' ?></div>
                     <div class="field-row">
                         <div class="field-group">
-                            <label>Ana Renk</label>
+                            <label><?= $L['primary_color'] ?? 'Ana Renk' ?></label>
                             <div class="color-row">
                                 <input type="color" id="widgetColor" value="#667eea"
                                     onchange="document.getElementById('widgetColorText').value=this.value">
@@ -875,7 +880,7 @@ if (!isset($_SESSION['admin_id'])) {
                             </div>
                         </div>
                         <div class="field-group">
-                            <label>Gradient Bitiş Rengi</label>
+                            <label><?= $L['gradient_end'] ?? 'Gradyan Bitiş' ?></label>
                             <div class="color-row">
                                 <input type="color" id="widgetGradientEnd" value="#764ba2"
                                     onchange="document.getElementById('widgetGradientEndText').value=this.value">
@@ -887,44 +892,44 @@ if (!isset($_SESSION['admin_id'])) {
                 </div>
 
                 <div class="form-card">
-                    <div class="form-card-title">Genel Bilgiler</div>
+                    <div class="form-card-title"><?= $L['general_info'] ?? 'Genel Bilgiler' ?></div>
                     <div class="field-row">
                         <div class="field-group">
-                            <label>Şirket Adı</label>
+                            <label><?= $L['company_name'] ?? 'Şirket Adı' ?></label>
                             <input type="text" id="companyName" value="VMDestek">
                         </div>
                         <div class="field-group">
-                            <label>Widget Konumu</label>
+                            <label><?= $L['widget_position'] ?? 'Widget Konumu' ?></label>
                             <select id="widgetPosition">
-                                <option value="right">Sağ Alt</option>
-                                <option value="left">Sol Alt</option>
+                                <option value="right"><?= $L['bottom_right'] ?? 'Sağ Alt' ?></option>
+                                <option value="left"><?= $L['bottom_left'] ?? 'Sol Alt' ?></option>
                             </select>
                         </div>
                     </div>
                     <div class="field-row single">
                         <div class="field-group">
-                            <label><i class="fas fa-globe" style="margin-right:6px;color:#667eea"></i> Widget
-                                Dili</label>
+                            <label><i class="fas fa-globe" style="margin-right:6px;color:#667eea"></i>
+                                <?= $L['widget_language'] ?? 'Widget Dili' ?></label>
                             <select id="widgetLanguage">
                                 <option value="tr">🇹🇷 Türkçe</option>
                                 <option value="en">🇬🇧 English</option>
                                 <option value="ar">🇸🇦 العربية (RTL)</option>
                             </select>
-                            <small style="color:var(--text-muted);margin-top:6px;display:block">Dil dosyaları:
-                                <code>lang/</code> klasöründen düzenlenebilir</small>
+                            <small
+                                style="color:var(--text-muted);margin-top:6px;display:block"><?= $L['lang_files_note'] ?? 'Dil dosyaları: lang/ klasöründen düzenlenebilir' ?></small>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-card">
-                    <div class="form-card-title">Çalışma Saatleri</div>
+                    <div class="form-card-title"><?= $L['working_hours'] ?? 'Çalışma Saatleri' ?></div>
                     <div class="field-row">
                         <div class="field-group">
-                            <label>Başlangıç</label>
+                            <label><?= $L['start_time'] ?? 'Başlangıç' ?></label>
                             <input type="time" id="workingHoursStart" value="09:00">
                         </div>
                         <div class="field-group">
-                            <label>Bitiş</label>
+                            <label><?= $L['end_time'] ?? 'Bitiş' ?></label>
                             <input type="time" id="workingHoursEnd" value="18:00">
                         </div>
                     </div>
@@ -934,21 +939,21 @@ if (!isset($_SESSION['admin_id'])) {
             <!-- TAB: Mesajlar -->
             <div class="tab-panel" id="tab-messages">
                 <div class="panel-header">
-                    <h1>Mesaj Ayarları</h1>
-                    <p>Ziyaretçilere gösterilecek otomatik mesajları düzenleyin</p>
+                    <h1><?= $L['messages_tab'] ?? 'Mesajlar' ?></h1>
+                    <p><?= $L['greeting_settings'] ?? 'Karşılama' ?></p>
                 </div>
 
                 <div class="form-card">
-                    <div class="form-card-title">Karşılama</div>
+                    <div class="form-card-title"><?= $L['greeting_settings'] ?? 'Karşılama' ?></div>
                     <div class="field-row single">
                         <div class="field-group">
-                            <label>Hoşgeldin Mesajı</label>
+                            <label><?= $L['welcome_msg'] ?? 'Karşılama Mesajı' ?></label>
                             <textarea id="welcomeMessage" rows="2">Merhaba! Size nasıl yardımcı olabiliriz?</textarea>
                         </div>
                     </div>
                     <div class="field-row single">
                         <div class="field-group">
-                            <label>Çevrimdışı Mesajı</label>
+                            <label><?= $L['offline_msg'] ?? 'Çevrimdışı Mesajı' ?></label>
                             <textarea id="offlineMessage"
                                 rows="2">Şu anda çevrimdışıyız. Lütfen mesajınızı bırakın.</textarea>
                         </div>
@@ -956,17 +961,17 @@ if (!isset($_SESSION['admin_id'])) {
                 </div>
 
                 <div class="form-card">
-                    <div class="form-card-title">Otomatik Yanıt</div>
+                    <div class="form-card-title"><?= $L['auto_reply'] ?? 'Otomatik Yanıt' ?></div>
                     <div class="field-row single">
                         <div class="field-group">
-                            <label>Otomatik Yanıt Mesajı</label>
+                            <label><?= $L['auto_reply_msg'] ?? 'Otomatik Yanıt Mesajı' ?></label>
                             <textarea id="autoReplyMessage"
                                 rows="2">Mesajınız alındı. Bir temsilci en kısa sürede size bağlanacak.</textarea>
                         </div>
                     </div>
                     <div class="toggle-row">
                         <input type="checkbox" id="autoReplyEnabled" checked>
-                        <span>Otomatik yanıt aktif</span>
+                        <span><?= $L['auto_reply_label'] ?? 'Otomatik Yanıt Aktif' ?></span>
                     </div>
                 </div>
             </div>
@@ -974,8 +979,8 @@ if (!isset($_SESSION['admin_id'])) {
             <!-- TAB: Hazır Yanıtlar -->
             <div class="tab-panel" id="tab-canned">
                 <div class="panel-header">
-                    <h1>Hazır Yanıtlar</h1>
-                    <p>Sık kullanılan mesajları kısayollarla hızlıca gönderin</p>
+                    <h1><?= $L['canned_tab'] ?? 'Hazır Yanıtlar' ?></h1>
+                    <p><?= $L['canned_management'] ?? 'Hazır Yanıt Yönetimi' ?></p>
                 </div>
 
                 <div class="form-card">
@@ -983,13 +988,17 @@ if (!isset($_SESSION['admin_id'])) {
 
                     <div class="add-form-box">
                         <div class="form-row">
-                            <input type="text" id="newCannedTitle" placeholder="Başlık">
-                            <input type="text" id="newCannedShortcut" placeholder="/kısayol" style="max-width:100px">
+                            <input type="text" id="newCannedTitle"
+                                placeholder="<?= $L['canned_title_placeholder'] ?? 'Başlık' ?>">
+                            <input type="text" id="newCannedShortcut"
+                                placeholder="<?= $L['canned_shortcut_placeholder'] ?? '/kısayol' ?>"
+                                style="max-width:100px">
                         </div>
-                        <textarea id="newCannedMessage" placeholder="Mesaj içeriği..."></textarea>
+                        <textarea id="newCannedMessage"
+                            placeholder="<?= $L['canned_message_placeholder'] ?? 'Mesaj içeriği...' ?>"></textarea>
                         <div style="margin-top:10px;text-align:right">
                             <button class="btn-primary-sm" onclick="addCannedResponse()">
-                                <i class="fas fa-plus"></i> Ekle
+                                <i class="fas fa-plus"></i> <?= $L['add_canned'] ?? 'Ekle' ?>
                             </button>
                         </div>
                     </div>
@@ -999,28 +1008,30 @@ if (!isset($_SESSION['admin_id'])) {
             <!-- TAB: Entegrasyon -->
             <div class="tab-panel" id="tab-embed">
                 <div class="panel-header">
-                    <h1>Entegrasyon</h1>
-                    <p>Widget'ı web sitenize eklemek için aşağıdaki kodları kullanın</p>
+                    <h1><?= $L['integrations_tab'] ?? 'Entegrasyon' ?></h1>
+                    <p><?= $L['embed_code'] ?? 'Entegrasyon Kodu' ?></p>
                 </div>
 
                 <div class="form-card">
-                    <div class="form-card-title">JavaScript Embed</div>
+                    <div class="form-card-title"><?= $L['embed_script'] ?? 'Script Kodu' ?></div>
                     <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">
                         <code>&lt;/body&gt;</code> etiketinden önce yapıştırın:
                     </p>
                     <div class="embed-block" id="embedCode">
-                        <button class="copy-btn" onclick="copyEmbedCode()"><i class="fas fa-copy"></i> Kopyala</button>
+                        <button class="copy-btn" onclick="copyEmbedCode()"><i class="fas fa-copy"></i>
+                            <?= $L['copy'] ?? 'Kopyala' ?></button>
                         <span id="embedCodeText"></span>
                     </div>
                 </div>
 
                 <div class="form-card">
-                    <div class="form-card-title">iframe Embed</div>
+                    <div class="form-card-title"><?= $L['embed_iframe'] ?? 'iFrame Kodu' ?></div>
                     <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">
                         Alternatif olarak iframe ile doğrudan gömebilirsiniz:
                     </p>
                     <div class="embed-block" id="iframeCode">
-                        <button class="copy-btn" onclick="copyIframeCode()"><i class="fas fa-copy"></i> Kopyala</button>
+                        <button class="copy-btn" onclick="copyIframeCode()"><i class="fas fa-copy"></i>
+                            <?= $L['copy'] ?? 'Kopyala' ?></button>
                         <span id="iframeCodeText"></span>
                     </div>
                 </div>
@@ -1029,8 +1040,8 @@ if (!isset($_SESSION['admin_id'])) {
             <!-- TAB: Kullanıcılar -->
             <div class="tab-panel" id="tab-users">
                 <div class="panel-header">
-                    <h1>Kullanıcı Yönetimi</h1>
-                    <p>Admin ve operatör hesaplarını yönetin</p>
+                    <h1><?= $L['user_management'] ?? 'Kullanıcı Yönetimi' ?></h1>
+                    <p><?= $L['users_tab'] ?? 'Kullanıcılar' ?></p>
                 </div>
 
                 <div class="form-card">
@@ -1039,23 +1050,25 @@ if (!isset($_SESSION['admin_id'])) {
                     <div class="add-form-box" id="addAdminForm">
                         <input type="hidden" id="editAdminId" value="0">
                         <div class="form-row">
-                            <input type="text" id="adminName" placeholder="Ad Soyad">
-                            <input type="text" id="adminUsername" placeholder="Kullanıcı adı">
+                            <input type="text" id="adminName" placeholder="<?= $L['fullname'] ?? 'Ad Soyad' ?>">
+                            <input type="text" id="adminUsername"
+                                placeholder="<?= $L['username_label'] ?? 'Kullanıcı adı' ?>">
                         </div>
                         <div class="form-row">
-                            <input type="email" id="adminEmail" placeholder="E-posta (opsiyonel)">
-                            <input type="password" id="adminPassword" placeholder="Şifre">
+                            <input type="email" id="adminEmail" placeholder="<?= $L['email'] ?? 'E-posta' ?>">
+                            <input type="password" id="adminPassword"
+                                placeholder="<?= $L['password_label'] ?? 'Şifre' ?>">
                             <select id="adminRole" style="max-width:120px">
-                                <option value="admin">Admin</option>
-                                <option value="operator">Operatör</option>
+                                <option value="admin"><?= $L['admin_role'] ?? 'Admin' ?></option>
+                                <option value="operator"><?= $L['operator_role'] ?? 'Operatör' ?></option>
                             </select>
                         </div>
                         <div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end">
                             <button class="btn-ghost-sm" id="btnCancelAdmin" onclick="cancelAdminEdit()"
-                                style="display:none">İptal</button>
+                                style="display:none"><?= $L['cancel_edit'] ?? 'İptal' ?></button>
                             <button class="btn-primary-sm" onclick="saveAdminUser()">
                                 <i class="fas fa-plus" id="adminFormIcon"></i>
-                                <span id="adminFormBtnText">Kullanıcı Ekle</span>
+                                <span id="adminFormBtnText"><?= $L['add_user'] ?? 'Kullanıcı Ekle' ?></span>
                             </button>
                         </div>
                     </div>
@@ -1065,8 +1078,8 @@ if (!isset($_SESSION['admin_id'])) {
             <!-- TAB: Güncelleme -->
             <div class="tab-panel" id="tab-update">
                 <div class="panel-header">
-                    <h1>Sistem Güncellemesi</h1>
-                    <p>GitHub üzerinden otomatik güncelleme kontrolü</p>
+                    <h1><?= $L['auto_update'] ?? 'Otomatik Güncelleme' ?></h1>
+                    <p><?= $L['current_version'] ?? 'Mevcut Sürüm' ?></p>
                 </div>
 
                 <div class="form-card">
@@ -1080,10 +1093,10 @@ if (!isset($_SESSION['admin_id'])) {
                         </div>
                         <div class="update-actions">
                             <button class="btn-check-update" onclick="checkForUpdate()" id="btnCheckUpdate">
-                                <i class="fas fa-sync-alt"></i> Güncelleme Kontrol Et
+                                <i class="fas fa-sync-alt"></i> <?= $L['check_update'] ?? 'Güncelleme Kontrol Et' ?>
                             </button>
                             <button class="btn-apply-update" onclick="applyUpdate()" id="btnApplyUpdate">
-                                <i class="fas fa-download"></i> Güncelle
+                                <i class="fas fa-download"></i> <?= $L['update_apply'] ?? 'Güncelle' ?>
                             </button>
                         </div>
                     </div>
@@ -1096,11 +1109,12 @@ if (!isset($_SESSION['admin_id'])) {
 
     <div class="toast" id="toast">
         <i class="fas fa-check-circle" style="margin-right:8px"></i>
-        Ayarlar kaydedildi!
+        <?= $L['settings_saved'] ?? 'Ayarlar kaydedildi!' ?>
     </div>
 
     <script>
         const SITE_URL = '<?= SITE_URL ?>';
+        const LANG = <?= json_encode($L, JSON_UNESCAPED_UNICODE) ?>;
 
         // ═══════ TAB SWITCHING ═══════
         function switchTab(tabId, navEl) {
@@ -1205,7 +1219,7 @@ if (!isset($_SESSION['admin_id'])) {
             const title = document.getElementById('newCannedTitle').value.trim();
             const message = document.getElementById('newCannedMessage').value.trim();
             const shortcut = document.getElementById('newCannedShortcut').value.trim();
-            if (!title || !message) return alert('Başlık ve mesaj gerekli');
+            if (!title || !message) return alert(LANG.title_date_required || 'Başlık ve mesaj gerekli');
             try {
                 const res = await fetch(`${SITE_URL}/api/admin.php?action=canned_save`, {
                     method: 'POST',
@@ -1226,7 +1240,7 @@ if (!isset($_SESSION['admin_id'])) {
         }
 
         async function deleteCanned(id) {
-            if (!confirm('Bu hazır yanıtı silmek istediğinize emin misiniz?')) return;
+            if (!confirm(LANG.confirm_delete_note || 'Bu hazır yanıtı silmek istediğinize emin misiniz?')) return;
             try {
                 const res = await fetch(`${SITE_URL}/api/admin.php?action=canned_delete`, {
                     method: 'POST',
@@ -1291,12 +1305,12 @@ if (!isset($_SESSION['admin_id'])) {
                                         ${a.email ? `<span>• ${escapeHtml(a.email)}</span>` : ''}
                                     </div>
                                 </div>
-                                <span class="role-badge ${a.role}">${a.role === 'admin' ? 'Admin' : 'Operatör'}</span>
+                                <span class="role-badge ${a.role}">${a.role === 'admin' ? (LANG.admin_role || 'Admin') : (LANG.operator_role || 'Operatör')}</span>
                                 <div class="admin-actions">
-                                    <button onclick='editAdmin(${JSON.stringify(a)})' title="Düzenle">
+                                    <button onclick='editAdmin(${JSON.stringify(a)})' title="${LANG.edit || 'Düzenle'}">
                                         <i class="fas fa-pen"></i>
                                     </button>
-                                    <button class="delete-admin" onclick="deleteAdminUser(${a.id})" title="Sil">
+                                    <button class="delete-admin" onclick="deleteAdminUser(${a.id})" title="${LANG.delete || 'Sil'}">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -1315,10 +1329,10 @@ if (!isset($_SESSION['admin_id'])) {
             document.getElementById('adminUsername').value = admin.username || '';
             document.getElementById('adminEmail').value = admin.email || '';
             document.getElementById('adminPassword').value = '';
-            document.getElementById('adminPassword').placeholder = 'Değiştirmek için yeni şifre girin';
+            document.getElementById('adminPassword').placeholder = LANG.change_password_placeholder || 'Değiştirmek için yeni şifre girin';
             document.getElementById('adminRole').value = admin.role || 'operator';
             document.getElementById('adminFormIcon').className = 'fas fa-save';
-            document.getElementById('adminFormBtnText').textContent = 'Güncelle';
+            document.getElementById('adminFormBtnText').textContent = LANG.update || 'Güncelle';
             document.getElementById('btnCancelAdmin').style.display = '';
         }
 
@@ -1328,10 +1342,10 @@ if (!isset($_SESSION['admin_id'])) {
             document.getElementById('adminUsername').value = '';
             document.getElementById('adminEmail').value = '';
             document.getElementById('adminPassword').value = '';
-            document.getElementById('adminPassword').placeholder = 'Şifre';
+            document.getElementById('adminPassword').placeholder = LANG.password_label || 'Şifre';
             document.getElementById('adminRole').value = 'operator';
             document.getElementById('adminFormIcon').className = 'fas fa-plus';
-            document.getElementById('adminFormBtnText').textContent = 'Kullanıcı Ekle';
+            document.getElementById('adminFormBtnText').textContent = LANG.add_user || 'Kullanıcı Ekle';
             document.getElementById('btnCancelAdmin').style.display = 'none';
         }
 
@@ -1343,8 +1357,8 @@ if (!isset($_SESSION['admin_id'])) {
             const password = document.getElementById('adminPassword').value;
             const role = document.getElementById('adminRole').value;
 
-            if (!name || !username) return alert('Ad Soyad ve Kullanıcı adı gerekli');
-            if (id === 0 && !password) return alert('Yeni kullanıcı için şifre gerekli');
+            if (!name || !username) return alert(LANG.name_username_required || 'Ad Soyad ve Kullanıcı adı gerekli');
+            if (id === 0 && !password) return alert(LANG.password_required_new || 'Yeni kullanıcı için şifre gerekli');
 
             try {
                 const res = await fetch(`${SITE_URL}/api/admin.php?action=admin_save`, {
@@ -1356,9 +1370,9 @@ if (!isset($_SESSION['admin_id'])) {
                 if (data.success) {
                     cancelAdminEdit();
                     loadAdminUsers();
-                    showToast(id > 0 ? 'Kullanıcı güncellendi!' : 'Kullanıcı eklendi!');
+                    showToast(id > 0 ? (LANG.user_updated || 'Kullanıcı güncellendi!') : (LANG.user_added || 'Kullanıcı eklendi!'));
                 } else {
-                    alert(data.error || 'Bir hata oluştu');
+                    alert(data.error || LANG.error_occurred || 'Bir hata oluştu');
                 }
             } catch (err) {
                 console.error('Save admin error:', err);
@@ -1366,7 +1380,7 @@ if (!isset($_SESSION['admin_id'])) {
         }
 
         async function deleteAdminUser(id) {
-            if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
+            if (!confirm(LANG.confirm_delete_user || 'Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
             try {
                 const res = await fetch(`${SITE_URL}/api/admin.php?action=admin_delete`, {
                     method: 'POST',
@@ -1376,9 +1390,9 @@ if (!isset($_SESSION['admin_id'])) {
                 const data = await res.json();
                 if (data.success) {
                     loadAdminUsers();
-                    showToast('Kullanıcı silindi!');
+                    showToast(LANG.user_deleted || 'Kullanıcı silindi!');
                 } else {
-                    alert(data.error || 'Bir hata oluştu');
+                    alert(data.error || LANG.error_occurred || 'Bir hata oluştu');
                 }
             } catch (err) {
                 console.error('Delete admin error:', err);
@@ -1391,11 +1405,11 @@ if (!isset($_SESSION['admin_id'])) {
                 const res = await fetch(`${SITE_URL}/version.json?t=${Date.now()}`);
                 const data = await res.json();
                 document.getElementById('currentVersion').textContent = 'v' + data.version;
-                document.getElementById('updateStatus').textContent = `Sürüm: ${data.version} | Build: ${data.build}`;
+                document.getElementById('updateStatus').textContent = `${LANG.current_version || 'Sürüm'}: ${data.version} | Build: ${data.build}`;
                 document.getElementById('versionBadge').textContent = 'v' + data.version;
             } catch (err) {
                 document.getElementById('currentVersion').textContent = 'v?';
-                document.getElementById('updateStatus').textContent = 'Sürüm bilgisi okunamadı';
+                document.getElementById('updateStatus').textContent = LANG.version_read_error || 'Sürüm bilgisi okunamadı';
             }
         }
 
@@ -1405,7 +1419,7 @@ if (!isset($_SESSION['admin_id'])) {
             const applyBtn = document.getElementById('btnApplyUpdate');
 
             btn.disabled = true;
-            btn.innerHTML = '<span class="update-spinner"></span> Kontrol ediliyor...';
+            btn.innerHTML = '<span class="update-spinner"></span> ' + (LANG.checking || 'Kontrol ediliyor...');
             result.className = 'update-result';
             result.style.display = 'none';
             applyBtn.style.display = 'none';
@@ -1420,40 +1434,40 @@ if (!isset($_SESSION['admin_id'])) {
                     result.style.display = 'block';
                 } else if (data.has_update) {
                     result.className = 'update-result has-update';
-                    let html = `<i class="fas fa-arrow-circle-up"></i> <strong>Yeni sürüm mevcut: v${data.remote_version.version}</strong> (Build: ${data.remote_version.build})`;
+                    let html = `<i class="fas fa-arrow-circle-up"></i> <strong>${LANG.update_available || 'Yeni sürüm mevcut'}: v${data.remote_version.version}</strong> (Build: ${data.remote_version.build})`;
                     if (data.commit) {
-                        html += `<br><small style="opacity:0.7">Son commit: ${escapeHtml(data.commit.message)} (${data.commit.sha})</small>`;
+                        html += `<br><small style="opacity:0.7">${LANG.last_commit || 'Son commit'}: ${escapeHtml(data.commit.message)} (${data.commit.sha})</small>`;
                     }
                     result.innerHTML = html;
                     result.style.display = 'block';
                     applyBtn.style.display = 'inline-flex';
                 } else {
                     result.className = 'update-result no-update';
-                    let html = '<i class="fas fa-check-circle"></i> Sisteminiz güncel!';
+                    let html = '<i class="fas fa-check-circle"></i> ' + (LANG.up_to_date || 'Sisteminiz güncel!');
                     if (data.commit) {
-                        html += `<br><small style="opacity:0.7">Son commit: ${escapeHtml(data.commit.message)} (${data.commit.sha})</small>`;
+                        html += `<br><small style="opacity:0.7">${LANG.last_commit || 'Son commit'}: ${escapeHtml(data.commit.message)} (${data.commit.sha})</small>`;
                     }
                     result.innerHTML = html;
                     result.style.display = 'block';
                 }
             } catch (err) {
                 result.className = 'update-result update-error';
-                result.innerHTML = '<i class="fas fa-times-circle"></i> Güncelleme sunucusuna bağlanılamadı.';
+                result.innerHTML = '<i class="fas fa-times-circle"></i> ' + (LANG.update_connect_error || 'Güncelleme sunucusuna bağlanılamadı.');
                 result.style.display = 'block';
             }
 
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-sync-alt"></i> Güncelleme Kontrol Et';
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> ' + (LANG.check_update || 'Güncelleme Kontrol Et');
         }
 
         async function applyUpdate() {
-            if (!confirm('Güncelleme uygulanacak. Devam etmek istiyor musunuz?\n\nNot: config.php ve uploads klasörünüz korunacaktır.')) return;
+            if (!confirm(LANG.update_confirm || 'Güncelleme uygulanacak. Devam etmek istiyor musunuz?\n\nNot: config.php ve uploads klasörünüz korunacaktır.')) return;
 
             const btn = document.getElementById('btnApplyUpdate');
             const result = document.getElementById('updateResult');
 
             btn.disabled = true;
-            btn.innerHTML = '<span class="update-spinner"></span> Güncelleniyor...';
+            btn.innerHTML = '<span class="update-spinner"></span> ' + (LANG.updating || 'Güncelleniyor...');
 
             try {
                 const res = await fetch(`${SITE_URL}/api/update.php?action=apply`, {
@@ -1464,23 +1478,23 @@ if (!isset($_SESSION['admin_id'])) {
 
                 if (data.success) {
                     result.className = 'update-result has-update';
-                    result.innerHTML = `<i class="fas fa-check-circle"></i> <strong>${data.message}</strong><br><small>${data.files_updated} dosya güncellendi. Sayfa yeniden yükleniyor...</small>`;
+                    result.innerHTML = `<i class="fas fa-check-circle"></i> <strong>${data.message || (LANG.update_success || 'Güncelleme başarılı!')}</strong><br><small>${data.files_updated} ${LANG.files_updated || 'dosya güncellendi. Sayfa yeniden yükleniyor...'}</small>`;
                     result.style.display = 'block';
                     btn.style.display = 'none';
                     setTimeout(() => { window.location.reload(); }, 2000);
                 } else {
                     result.className = 'update-result update-error';
-                    result.innerHTML = `<i class="fas fa-times-circle"></i> ${data.error || 'Güncelleme sırasında bir hata oluştu.'}`;
+                    result.innerHTML = `<i class="fas fa-times-circle"></i> ${data.error || LANG.update_error || 'Güncelleme sırasında bir hata oluştu.'}`;
                     result.style.display = 'block';
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-download"></i> Güncelle';
+                    btn.innerHTML = '<i class="fas fa-download"></i> ' + (LANG.update_apply || 'Güncelle');
                 }
             } catch (err) {
                 result.className = 'update-result update-error';
-                result.innerHTML = '<i class="fas fa-times-circle"></i> Güncelleme uygulanırken bir hata oluştu.';
+                result.innerHTML = '<i class="fas fa-times-circle"></i> ' + (LANG.update_error || 'Güncelleme uygulanırken bir hata oluştu.');
                 result.style.display = 'block';
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-download"></i> Güncelle';
+                btn.innerHTML = '<i class="fas fa-download"></i> ' + (LANG.update_apply || 'Güncelle');
             }
         }
 

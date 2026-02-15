@@ -27,7 +27,18 @@ function getSystemLanguage()
     try {
         $setting = db()->fetch("SELECT setting_value FROM settings WHERE setting_key = 'language'");
         return $setting ? $setting['setting_value'] : 'tr';
-    } catch (Exception $e) {
+    } catch (\Throwable $e) {
         return 'tr';
     }
+}
+
+/**
+ * Admin paneli için dil string'lerini yükler
+ * config.php include edilmiş olmalı (db() için)
+ */
+function getAdminLang()
+{
+    $code = getSystemLanguage();
+    $all = loadLang($code);
+    return isset($all['admin']) ? $all['admin'] : [];
 }
