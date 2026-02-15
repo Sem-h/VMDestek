@@ -40,100 +40,127 @@
     // ═══════ CSS ═══════
     const css = document.createElement('style');
     css.textContent = `
+        /* ═══════ BUTTON ═══════ */
         #vmd-btn{position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border:none;cursor:pointer;box-shadow:0 4px 24px rgba(102,126,234,0.4);z-index:999998;display:flex;align-items:center;justify-content:center;transition:all .3s cubic-bezier(.175,.885,.32,1.275);outline:none}
-        #vmd-btn:hover{transform:scale(1.08);box-shadow:0 6px 32px rgba(102,126,234,0.5)}
+        #vmd-btn:hover{transform:scale(1.1);box-shadow:0 6px 32px rgba(102,126,234,0.55)}
         #vmd-btn svg{width:28px;height:28px;fill:#fff;transition:all .3s}
         #vmd-btn.open{opacity:0;pointer-events:none;transform:scale(.5)}
         #vmd-btn::before{content:'';position:absolute;width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);animation:vmd-pulse 2s ease-out infinite;z-index:-1}
-        @keyframes vmd-pulse{0%{transform:scale(1);opacity:.5}100%{transform:scale(1.6);opacity:0}}
+        @keyframes vmd-pulse{0%{transform:scale(1);opacity:.4}100%{transform:scale(1.7);opacity:0}}
         #vmd-btn .vmd-badge{position:absolute;top:-4px;right:-4px;width:22px;height:22px;background:#ef4444;color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:none;align-items:center;justify-content:center;border:2px solid #fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
         #vmd-btn .vmd-badge.show{display:flex}
-        #vmd-widget{position:fixed;bottom:96px;right:24px;width:${W}px;height:${H}px;max-height:calc(100vh - 120px);z-index:999999;border-radius:16px;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,.15),0 4px 16px rgba(0,0,0,.1);opacity:0;transform:translateY(20px) scale(.95);transition:all .3s cubic-bezier(.175,.885,.32,1.275);pointer-events:none;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.5;color:#1a1a2e;display:flex;flex-direction:column;background:#fff}
+
+        /* ═══════ WIDGET CONTAINER ═══════ */
+        #vmd-widget{position:fixed;bottom:96px;right:24px;width:${W}px;height:${H}px;max-height:calc(100vh - 120px);z-index:999999;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.18),0 8px 24px rgba(0,0,0,.08);opacity:0;transform:translateY(20px) scale(.95);transition:all .35s cubic-bezier(.175,.885,.32,1.275);pointer-events:none;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif!important;font-size:14px!important;line-height:1.5!important;color:#1a1a2e!important;display:flex;flex-direction:column;background:#f5f6fa}
         #vmd-widget.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all;bottom:24px}
-        #vmd-widget *{margin:0;padding:0;box-sizing:border-box}
-        @media(max-width:480px){#vmd-widget{bottom:0!important;right:0;left:0;width:100%;height:100%;max-height:100vh;border-radius:0}#vmd-btn{bottom:16px;right:16px}}
-        #vmd-greeting{position:fixed;bottom:92px;right:24px;background:#fff;color:#1a1a2e;padding:12px 20px;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.12);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;max-width:260px;z-index:999997;opacity:0;transform:translateY(10px);transition:all .3s ease;pointer-events:none}
+        #vmd-widget,#vmd-widget *{margin:0;padding:0;box-sizing:border-box!important}
+        @media(max-width:480px){#vmd-widget{bottom:0!important;right:0!important;left:0!important;width:100%!important;height:100%!important;max-height:100vh!important;border-radius:0!important}#vmd-btn{bottom:16px;right:16px}}
+
+        /* ═══════ GREETING ═══════ */
+        #vmd-greeting{position:fixed;bottom:92px;right:24px;background:#fff;color:#1a1a2e;padding:14px 22px;border-radius:14px 14px 4px 14px;box-shadow:0 8px 32px rgba(0,0,0,.12);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;max-width:260px;z-index:999997;opacity:0;transform:translateY(10px);transition:all .3s ease;pointer-events:none}
         #vmd-greeting.show{opacity:1;transform:translateY(0);pointer-events:all}
-        #vmd-greeting::after{content:'';position:absolute;bottom:-6px;right:24px;width:12px;height:12px;background:#fff;transform:rotate(45deg);box-shadow:2px 2px 4px rgba(0,0,0,.05)}
         #vmd-greeting .vmd-close-g{position:absolute;top:4px;right:8px;background:none;border:none;color:#999;cursor:pointer;font-size:14px;padding:2px 4px}
-        .vmd-screen{display:flex;flex-direction:column;height:100%}
-        .vmd-header{background:var(--vmd-gradient);padding:24px 20px 40px;position:relative;flex-shrink:0}
-        .vmd-header.compact{padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
-        .vmd-hdr-content{display:flex;align-items:center;gap:14px;position:relative;z-index:2}
-        .vmd-hdr-icon{width:48px;height:48px;background:rgba(255,255,255,.2);backdrop-filter:blur(10px);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff}
-        .vmd-hdr-icon.small{width:36px;height:36px;border-radius:10px;font-size:16px}
-        .vmd-hdr-text h2{color:#fff;font-size:17px;font-weight:700;margin-bottom:2px}
-        .compact .vmd-hdr-text h2{font-size:14px}
-        .vmd-status{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.85);font-size:12px}
-        .vmd-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4)}
-        .vmd-dot.online{background:#4ade80;box-shadow:0 0 6px rgba(74,222,128,.6);animation:vmd-p 2s ease infinite}
-        .vmd-dot.offline{background:#fbbf24}
+
+        /* ═══════ SCREEN LAYOUT ═══════ */
+        #vmd-widget .vmd-screen{display:flex!important;flex-direction:column!important;height:100%!important}
+
+        /* ═══════ HEADER ═══════ */
+        #vmd-widget .vmd-header{background:var(--vmd-gradient)!important;padding:20px 20px 32px!important;position:relative!important;flex-shrink:0!important}
+        #vmd-widget .vmd-header.compact{padding:12px 16px!important;display:flex!important;align-items:center!important;justify-content:space-between!important}
+        #vmd-widget .vmd-hdr-content{display:flex!important;align-items:center!important;gap:12px!important;position:relative;z-index:2}
+        #vmd-widget .vmd-hdr-icon{width:44px!important;height:44px!important;background:rgba(255,255,255,.18)!important;backdrop-filter:blur(10px);border-radius:12px!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:20px!important;color:#fff!important}
+        #vmd-widget .vmd-hdr-icon.small{width:34px!important;height:34px!important;border-radius:10px!important;font-size:15px!important}
+        #vmd-widget .vmd-hdr-text h2{color:#fff!important;font-size:16px!important;font-weight:700!important;margin-bottom:1px!important;background:none!important;border:none!important;text-transform:none!important;letter-spacing:normal!important}
+        #vmd-widget .compact .vmd-hdr-text h2{font-size:14px!important;margin-bottom:0!important}
+        #vmd-widget .vmd-status{display:flex!important;align-items:center!important;gap:6px!important;color:rgba(255,255,255,.85)!important;font-size:12px!important}
+        #vmd-widget .vmd-dot{width:7px!important;height:7px!important;border-radius:50%!important;background:rgba(255,255,255,.4)!important;display:inline-block!important}
+        #vmd-widget .vmd-dot.online{background:#4ade80!important;box-shadow:0 0 8px rgba(74,222,128,.6);animation:vmd-p 2s ease infinite}
+        #vmd-widget .vmd-dot.offline{background:#fbbf24!important}
         @keyframes vmd-p{0%,100%{opacity:1}50%{opacity:.5}}
-        .vmd-hdr-wave{position:absolute;bottom:-1px;left:0;right:0;z-index:1}
-        .vmd-hdr-wave svg{width:100%;height:30px;display:block}
-        .vmd-hdr-actions{display:flex;gap:8px;position:absolute;top:16px;right:16px;z-index:3}
-        .compact .vmd-hdr-actions{position:static}
-        .vmd-hdr-btn{width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;font-size:13px}
-        .vmd-hdr-btn:hover{background:rgba(255,255,255,.2)}
-        .vmd-body{flex:1;overflow-y:auto;padding:20px}
-        .vmd-prechat{display:flex;flex-direction:column}
-        .vmd-welcome{text-align:center;margin-bottom:28px}
-        .vmd-emoji{font-size:48px;margin-bottom:12px;animation:vmd-wave 1.5s ease-in-out}
+        #vmd-widget .vmd-hdr-wave{position:absolute!important;bottom:-1px!important;left:0!important;right:0!important;z-index:1}
+        #vmd-widget .vmd-hdr-wave svg{width:100%;height:24px;display:block}
+        #vmd-widget .vmd-hdr-actions{display:flex!important;gap:6px!important;position:absolute!important;top:14px!important;right:14px!important;z-index:3}
+        #vmd-widget .compact .vmd-hdr-actions{position:static!important}
+        #vmd-widget .vmd-hdr-btn{width:30px!important;height:30px!important;border-radius:8px!important;border:1px solid rgba(255,255,255,.2)!important;background:rgba(255,255,255,.1)!important;color:#fff!important;cursor:pointer;transition:all .2s;display:flex!important;align-items:center!important;justify-content:center!important;font-size:12px!important}
+        #vmd-widget .vmd-hdr-btn:hover{background:rgba(255,255,255,.25)!important}
+
+        /* ═══════ BODY / PRE-CHAT ═══════ */
+        #vmd-widget .vmd-body{flex:1!important;overflow-y:auto!important;padding:24px 22px 20px!important;background:#fff!important}
+        #vmd-widget .vmd-body::-webkit-scrollbar{width:3px}
+        #vmd-widget .vmd-body::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px}
+        #vmd-widget .vmd-prechat{display:flex!important;flex-direction:column!important}
+        #vmd-widget .vmd-welcome{text-align:center!important;margin-bottom:24px!important}
+        #vmd-widget .vmd-emoji{font-size:42px!important;margin-bottom:8px!important;display:block!important;animation:vmd-wave 1.5s ease-in-out}
         @keyframes vmd-wave{0%,100%{transform:rotate(0)}25%{transform:rotate(20deg)}50%{transform:rotate(-10deg)}75%{transform:rotate(15deg)}}
-        .vmd-welcome h3{font-size:20px;font-weight:700;color:#1a1a2e;margin-bottom:6px}
-        .vmd-welcome p{font-size:14px;color:#666;line-height:1.5}
-        .vmd-field{margin-bottom:16px}
-        .vmd-field label{display:block;font-size:12px;font-weight:500;color:#555;margin-bottom:6px}
-        .vmd-field label i{margin-right:4px;color:var(--vmd-color);font-size:11px}
-        .vmd-field input,.vmd-field textarea{width:100%;padding:12px 14px;background:#f8f9fb;border:2px solid #e8eaef;border-radius:10px;color:#1a1a2e;font-size:14px;font-family:inherit;outline:none;transition:all .2s}
-        .vmd-field input:focus,.vmd-field textarea:focus{border-color:var(--vmd-color);background:#fff;box-shadow:0 0 0 3px rgba(102,126,234,.1)}
-        .vmd-field input::placeholder,.vmd-field textarea::placeholder{color:#aab0c0}
-        .vmd-field textarea{resize:none}
-        .vmd-start-btn{width:100%;padding:14px;background:var(--vmd-gradient);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .3s;margin-top:8px}
-        .vmd-start-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(102,126,234,.35)}
-        .vmd-start-btn:active{transform:translateY(0)}
-        .vmd-btn-c{display:flex;align-items:center;justify-content:center;gap:8px}
-        .vmd-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#f8f9fb}
-        .vmd-msgs::-webkit-scrollbar{width:4px}
-        .vmd-msgs::-webkit-scrollbar-track{background:transparent}
-        .vmd-msgs::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}
-        .vmd-msg{display:flex;gap:8px;max-width:85%;animation:vmd-slide .3s ease}
-        @keyframes vmd-slide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-        .vmd-msg.visitor{align-self:flex-end;flex-direction:row-reverse}
-        .vmd-msg.admin,.vmd-msg.system{align-self:flex-start}
-        .vmd-msg-av{width:28px;height:28px;min-width:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
-        .vmd-msg.admin .vmd-msg-av{background:var(--vmd-gradient)}
-        .vmd-msg.visitor .vmd-msg-av{display:none}
-        .vmd-msg-c{display:flex;flex-direction:column;gap:3px}
-        .vmd-msg-name{font-size:10px;font-weight:600;color:#999;padding:0 4px}
-        .vmd-msg-bbl{padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.5;word-break:break-word}
-        .vmd-msg.visitor .vmd-msg-bbl{background:var(--vmd-gradient);color:#fff;border-bottom-right-radius:4px}
-        .vmd-msg.admin .vmd-msg-bbl{background:#fff;color:#1a1a2e;border:1px solid #e8eaef;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-        .vmd-msg.system .vmd-msg-bbl{background:#fff9e6;color:#b8860b;font-size:12px;text-align:center;border-radius:8px;border:1px solid #ffeeba;padding:8px 12px;max-width:100%;align-self:center}
-        .vmd-msg.system{max-width:90%;align-self:center}
-        .vmd-msg-time{font-size:10px;color:#aaa;padding:0 4px}
-        .vmd-msg.visitor .vmd-msg-time{text-align:right}
-        .vmd-typing{display:flex;align-items:center;gap:8px;padding:6px 16px 10px;background:#f8f9fb}
-        .vmd-typ-bbl{display:flex;gap:3px;padding:8px 12px;background:#fff;border:1px solid #e8eaef;border-radius:16px;border-bottom-left-radius:4px}
-        .vmd-typ-bbl span{width:6px;height:6px;border-radius:50%;background:#bbb;animation:vmd-bounce 1.4s infinite}
-        .vmd-typ-bbl span:nth-child(2){animation-delay:.15s}
-        .vmd-typ-bbl span:nth-child(3){animation-delay:.3s}
+        #vmd-widget .vmd-welcome h3{font-size:18px!important;font-weight:700!important;color:#1a1a2e!important;margin-bottom:4px!important;background:none!important;border:none!important;text-transform:none!important;letter-spacing:normal!important}
+        #vmd-widget .vmd-welcome p{font-size:13px!important;color:#777!important;line-height:1.5!important;margin:0!important}
+
+        /* ═══════ FORM FIELDS ═══════ */
+        #vmd-widget .vmd-field{margin-bottom:14px!important}
+        #vmd-widget .vmd-field label{display:block!important;font-size:11px!important;font-weight:600!important;color:#888!important;margin-bottom:5px!important;text-transform:uppercase!important;letter-spacing:.3px!important;background:none!important;border:none!important;padding:0!important}
+        #vmd-widget .vmd-field label i{margin-right:4px!important;color:var(--vmd-color)!important;font-size:10px!important}
+        #vmd-widget .vmd-field input,#vmd-widget .vmd-field textarea{display:block!important;width:100%!important;padding:11px 14px!important;background:#f8f9fb!important;border:1.5px solid #e2e5eb!important;border-radius:10px!important;color:#1a1a2e!important;font-size:13.5px!important;font-family:inherit!important;outline:none!important;transition:all .2s!important;-webkit-appearance:none!important;appearance:none!important;height:auto!important;min-height:0!important;max-width:100%!important;box-shadow:none!important}
+        #vmd-widget .vmd-field input:focus,#vmd-widget .vmd-field textarea:focus{border-color:var(--vmd-color)!important;background:#fff!important;box-shadow:0 0 0 3px rgba(102,126,234,.08)!important}
+        #vmd-widget .vmd-field input::placeholder,#vmd-widget .vmd-field textarea::placeholder{color:#b5bac8!important}
+        #vmd-widget .vmd-field textarea{resize:none!important}
+
+        /* ═══════ START BUTTON ═══════ */
+        #vmd-widget .vmd-start-btn{display:block!important;width:100%!important;padding:13px!important;background:var(--vmd-gradient)!important;color:#fff!important;border:none!important;border-radius:12px!important;font-size:14px!important;font-weight:600!important;font-family:inherit!important;cursor:pointer!important;transition:all .3s!important;margin-top:6px!important;text-align:center!important;text-decoration:none!important;letter-spacing:normal!important;text-transform:none!important;line-height:1.5!important;box-shadow:none!important}
+        #vmd-widget .vmd-start-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(102,126,234,.35)!important}
+        #vmd-widget .vmd-start-btn:active{transform:translateY(0)}
+        #vmd-widget .vmd-start-btn:disabled{opacity:.6;cursor:not-allowed!important;transform:none!important;box-shadow:none!important}
+        #vmd-widget .vmd-btn-c{display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important}
+
+        /* ═══════ CHAT MESSAGES ═══════ */
+        #vmd-widget .vmd-msgs{flex:1!important;overflow-y:auto!important;padding:16px!important;display:flex!important;flex-direction:column!important;gap:10px!important;background:#f5f6fa!important}
+        #vmd-widget .vmd-msgs::-webkit-scrollbar{width:3px}
+        #vmd-widget .vmd-msgs::-webkit-scrollbar-track{background:transparent}
+        #vmd-widget .vmd-msgs::-webkit-scrollbar-thumb{background:#d0d3da;border-radius:3px}
+        #vmd-widget .vmd-msg{display:flex!important;gap:8px!important;max-width:82%!important;animation:vmd-slide .3s ease}
+        @keyframes vmd-slide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        #vmd-widget .vmd-msg.visitor{align-self:flex-end!important;flex-direction:row-reverse!important}
+        #vmd-widget .vmd-msg.admin,#vmd-widget .vmd-msg.system{align-self:flex-start!important}
+        #vmd-widget .vmd-msg-av{width:28px!important;height:28px!important;min-width:28px!important;border-radius:50%!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:11px!important;font-weight:600!important;color:#fff!important;flex-shrink:0!important}
+        #vmd-widget .vmd-msg.admin .vmd-msg-av{background:var(--vmd-gradient)!important}
+        #vmd-widget .vmd-msg.visitor .vmd-msg-av{display:none!important}
+        #vmd-widget .vmd-msg-c{display:flex!important;flex-direction:column!important;gap:2px!important}
+        #vmd-widget .vmd-msg-name{font-size:10px!important;font-weight:600!important;color:#999!important;padding:0 4px!important}
+        #vmd-widget .vmd-msg-bbl{padding:10px 14px!important;border-radius:16px!important;font-size:13px!important;line-height:1.5!important;word-break:break-word!important}
+        #vmd-widget .vmd-msg.visitor .vmd-msg-bbl{background:var(--vmd-gradient)!important;color:#fff!important;border-bottom-right-radius:4px!important}
+        #vmd-widget .vmd-msg.admin .vmd-msg-bbl{background:#fff!important;color:#1a1a2e!important;border:1px solid #e8eaef!important;border-bottom-left-radius:4px!important;box-shadow:0 1px 4px rgba(0,0,0,.04)!important}
+        #vmd-widget .vmd-msg.system .vmd-msg-bbl{background:#fef9e7!important;color:#b8860b!important;font-size:12px!important;text-align:center!important;border-radius:8px!important;border:1px solid #fcefc7!important;padding:8px 14px!important}
+        #vmd-widget .vmd-msg.system{max-width:90%!important;align-self:center!important}
+        #vmd-widget .vmd-msg-time{font-size:10px!important;color:#b0b5c3!important;padding:0 4px!important}
+        #vmd-widget .vmd-msg.visitor .vmd-msg-time{text-align:right!important}
+
+        /* ═══════ TYPING ═══════ */
+        #vmd-widget .vmd-typing{display:flex!important;align-items:center!important;gap:8px!important;padding:6px 16px 10px!important;background:#f5f6fa!important}
+        #vmd-widget .vmd-typ-bbl{display:flex!important;gap:3px!important;padding:8px 12px!important;background:#fff!important;border:1px solid #e8eaef!important;border-radius:16px!important;border-bottom-left-radius:4px!important}
+        #vmd-widget .vmd-typ-bbl span{width:6px!important;height:6px!important;border-radius:50%!important;background:#bbb!important;animation:vmd-bounce 1.4s infinite}
+        #vmd-widget .vmd-typ-bbl span:nth-child(2){animation-delay:.15s}
+        #vmd-widget .vmd-typ-bbl span:nth-child(3){animation-delay:.3s}
         @keyframes vmd-bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
-        .vmd-typ-txt{font-size:11px;color:#999;font-style:italic}
-        .vmd-input-area{border-top:1px solid #e8eaef;background:#fff;flex-shrink:0}
-        .vmd-input-wrap{display:flex;align-items:flex-end;gap:8px;padding:10px 12px 6px}
-        .vmd-input{flex:1;padding:10px 14px;background:#f8f9fb;border:2px solid #e8eaef;border-radius:20px;color:#1a1a2e;font-size:13px;font-family:inherit;resize:none;outline:none;max-height:100px;line-height:1.4;transition:border-color .2s}
-        .vmd-input:focus{border-color:var(--vmd-color)}
-        .vmd-input::placeholder{color:#aab0c0}
-        .vmd-send{width:38px;height:38px;min-width:38px;border:none;background:var(--vmd-gradient);color:#fff;border-radius:50%;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;font-size:14px}
-        .vmd-send:hover:not(:disabled){transform:scale(1.08);box-shadow:0 4px 12px rgba(102,126,234,.4)}
-        .vmd-send:disabled{opacity:.4;cursor:not-allowed}
-        .vmd-powered{text-align:center;padding:4px 0 8px;font-size:10px;color:#ccc}
-        .vmd-powered strong{background:var(--vmd-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600}
-        .vmd-rating{margin:16px 0;display:flex;justify-content:center;gap:8px}
-        .vmd-star{font-size:36px;color:#ddd;cursor:pointer;transition:all .2s;background:none;border:none}
-        .vmd-star:hover,.vmd-star.active{color:#fbbf24;transform:scale(1.15)}
-        .vmd-star.active{text-shadow:0 2px 12px rgba(251,191,36,.4)}
+        #vmd-widget .vmd-typ-txt{font-size:11px!important;color:#999!important;font-style:italic!important}
+
+        /* ═══════ INPUT AREA ═══════ */
+        #vmd-widget .vmd-input-area{border-top:1px solid #eceef2!important;background:#fff!important;flex-shrink:0!important}
+        #vmd-widget .vmd-input-wrap{display:flex!important;align-items:flex-end!important;gap:8px!important;padding:10px 14px 8px!important}
+        #vmd-widget .vmd-input{flex:1!important;padding:10px 14px!important;background:#f5f6fa!important;border:1.5px solid #e2e5eb!important;border-radius:20px!important;color:#1a1a2e!important;font-size:13px!important;font-family:inherit!important;resize:none!important;outline:none!important;max-height:100px!important;line-height:1.4!important;transition:border-color .2s!important;-webkit-appearance:none!important;appearance:none!important;box-shadow:none!important}
+        #vmd-widget .vmd-input:focus{border-color:var(--vmd-color)!important;background:#fff!important}
+        #vmd-widget .vmd-input::placeholder{color:#b5bac8!important}
+        #vmd-widget .vmd-send{width:36px!important;height:36px!important;min-width:36px!important;border:none!important;background:var(--vmd-gradient)!important;color:#fff!important;border-radius:50%!important;cursor:pointer!important;transition:all .2s;display:flex!important;align-items:center!important;justify-content:center!important;font-size:13px!important}
+        #vmd-widget .vmd-send:hover:not(:disabled){transform:scale(1.1);box-shadow:0 4px 14px rgba(102,126,234,.4)}
+        #vmd-widget .vmd-send:disabled{opacity:.35!important;cursor:not-allowed!important}
+
+        /* ═══════ POWERED BY ═══════ */
+        #vmd-widget .vmd-powered{text-align:center!important;padding:3px 0 7px!important;font-size:10px!important;color:#ccc!important;background:#fff!important}
+        #vmd-widget .vmd-powered strong{background:var(--vmd-gradient)!important;-webkit-background-clip:text!important;-webkit-text-fill-color:transparent!important;background-clip:text!important;font-weight:600!important}
+
+        /* ═══════ END SCREEN / RATING ═══════ */
+        #vmd-widget .vmd-rating{margin:20px 0!important;display:flex!important;justify-content:center!important;gap:6px!important}
+        #vmd-widget .vmd-star{font-size:34px!important;color:#ddd!important;cursor:pointer!important;transition:all .2s;background:none!important;border:none!important;line-height:1!important}
+        #vmd-widget .vmd-star:hover,#vmd-widget .vmd-star.active{color:#fbbf24!important;transform:scale(1.2)}
+        #vmd-widget .vmd-star.active{text-shadow:0 2px 12px rgba(251,191,36,.4)}
     `;
     document.head.appendChild(css);
 
