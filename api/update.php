@@ -57,16 +57,31 @@ function checkForUpdate()
         jsonError('Yerel sürüm dosyası okunamadı');
     }
 
-    // GitHub'dan uzak sürümü çek
-    $remoteVersionUrl = GITHUB_RAW . '/version.json';
+    // GitHub'dan uzak sürümü çek (API üzerinden - cache sorunu olmaz)
+    $remoteVersionUrl = GITHUB_API . '/contents/version.json?ref=main&t=' . time();
     $remoteContent = fetchUrl($remoteVersionUrl);
+
+    if ($remoteContent === false) {
+        // Fallback: raw.githubusercontent.com dene (cache'li olabilir)
+        $remoteVersionUrl = GITHUB_RAW . '/version.json?t=' . time();
+        $remoteContent = fetchUrl($remoteVersionUrl);
+    }
 
     if ($remoteContent === false) {
         jsonError('GitHub sunucusuna bağlanılamadı. İnternet bağlantınızı kontrol edin.');
     }
 
-    $remoteVersion = json_decode($remoteContent, true);
-    if (!$remoteVersion) {
+    // API response ise content base64 encoded olur
+    $remoteData = json_decode($remoteContent, true);
+    if ($remoteData && isset($remoteData['content'])) {
+        // GitHub API response - base64 decode et
+        $remoteVersion = json_decode(base64_decode($remoteData['content']), true);
+    } else {
+        // Raw content response
+        $remoteVersion = $remoteData;
+    }
+
+    if (!$remoteVersion || !isset($remoteVersion['version'])) {
         jsonError('Uzak sürüm bilgisi okunamadı');
     }
 
