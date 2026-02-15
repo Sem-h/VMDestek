@@ -134,7 +134,7 @@ body {
     color: var(--text-secondary);
 }
 
-.admin-status {
+.admin-status-toggle {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -145,6 +145,23 @@ body {
     background: var(--bg-glass);
     border-radius: 20px;
     border: 1px solid var(--border);
+    cursor: pointer;
+    transition: var(--transition);
+    user-select: none;
+}
+
+.admin-status-toggle:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.admin-status-toggle.offline {
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.admin-status-toggle.offline .status-dot {
+    background: #666;
+    box-shadow: none;
 }
 
 .status-dot {

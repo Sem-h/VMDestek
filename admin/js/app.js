@@ -9,6 +9,7 @@ let lastMessageId = 0;
 let conversations = [];
 let prevConversationIds = [];
 let cannedResponses = [];
+let isAdminOnline = true;
 let pollTimeout = null;
 let convPollTimeout = null;
 let heartbeatInterval = null;
@@ -817,23 +818,64 @@ function startVisitorPolling() {
 }
 
 function startHeartbeat() {
-    heartbeatInterval = setInterval(async () => {
-        try {
-            const res = await fetch(`${SITE_URL}/api/admin.php?action=heartbeat`);
-            const data = await res.json();
-            if (data.success) {
-                if (data.waiting_count > 0 && !currentConversationId) {
-                    document.title = `(${data.waiting_count}) VMDestek - Admin`;
-                } else {
-                    document.title = 'VMDestek - Admin Panel';
-                }
-                // Check reminders
-                if (data.reminders) {
-                    checkReminders(data.reminders);
-                }
+    // Initial heartbeat
+    sendHeartbeatNow();
+    heartbeatInterval = setInterval(sendHeartbeatNow, 15000);
+}
+
+async function sendHeartbeatNow() {
+    try {
+        const res = await fetch(`${SITE_URL}/api/admin.php?action=heartbeat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ is_online: isAdminOnline ? 1 : 0 })
+        });
+        const data = await res.json();
+        if (data.success) {
+            if (data.waiting_count > 0 && !currentConversationId) {
+                document.title = `(${data.waiting_count}) VMDestek - Admin`;
+            } else {
+                document.title = 'VMDestek - Admin Panel';
             }
-        } catch (err) { }
-    }, 15000);
+            // Check reminders
+            if (data.reminders) {
+                checkReminders(data.reminders);
+            }
+        }
+    } catch (err) { }
+}
+
+// ============ ONLINE/OFFLINE TOGGLE ============
+async function toggleOnlineStatus() {
+    const newStatus = !isAdminOnline;
+    try {
+        const res = await fetch(`${SITE_URL}/api/admin.php?action=toggle_status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ is_online: newStatus ? 1 : 0 })
+        });
+        const data = await res.json();
+        if (data.success) {
+            isAdminOnline = newStatus;
+            updateAdminStatusUI();
+        }
+    } catch (err) {
+        console.error('Status toggle error:', err);
+    }
+}
+
+function updateAdminStatusUI() {
+    const toggle = document.getElementById('adminStatusToggle');
+    const dot = document.getElementById('adminStatusDot');
+    if (isAdminOnline) {
+        toggle.classList.remove('offline');
+        dot.classList.add('online');
+        dot.classList.remove('offline');
+    } else {
+        toggle.classList.add('offline');
+        dot.classList.remove('online');
+        dot.classList.add('offline');
+    }
 }
 
 // ============ STATS ============

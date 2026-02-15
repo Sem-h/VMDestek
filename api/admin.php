@@ -85,6 +85,11 @@ switch ($action) {
     case 'heartbeat':
         heartbeat();
         break;
+    case 'toggle_status':
+        if ($method !== 'POST')
+            jsonError('Method not allowed', 405);
+        toggleStatus();
+        break;
     // Notes
     case 'notes':
         getNotes();
@@ -430,17 +435,32 @@ function saveSettings()
 
 function heartbeat()
 {
-    db()->update("UPDATE admins SET is_online = 1, last_seen = NOW() WHERE id = ?", [$_SESSION['admin_id']]);
+    // Respect client-sent online status (for manual toggle)
+    $data = json_decode(file_get_contents('php://input'), true);
+    $isOnline = isset($data['is_online']) ? (int) $data['is_online'] : 1;
+
+    db()->update("UPDATE admins SET is_online = ?, last_seen = NOW() WHERE id = ?", [$isOnline, $_SESSION['admin_id']]);
 
     $waitingCount = db()->fetch("SELECT COUNT(*) as cnt FROM conversations WHERE status = 'waiting'");
     $totalUnread = db()->fetch("SELECT COUNT(*) as cnt FROM messages WHERE sender_type = 'visitor' AND is_read = 0");
 
     echo json_encode([
         'success' => true,
+        'is_online' => $isOnline,
         'waiting_count' => (int) ($waitingCount['cnt'] ?? 0),
         'total_unread' => (int) ($totalUnread['cnt'] ?? 0),
         'reminders' => getActiveRemindersData()
     ]);
+}
+
+function toggleStatus()
+{
+    $data = json_decode(file_get_contents('php://input'), true);
+    $isOnline = (int) ($data['is_online'] ?? 0);
+
+    db()->update("UPDATE admins SET is_online = ?, last_seen = NOW() WHERE id = ?", [$isOnline, $_SESSION['admin_id']]);
+
+    echo json_encode(['success' => true, 'is_online' => $isOnline]);
 }
 
 // ============ NOTES ============

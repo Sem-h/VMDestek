@@ -118,6 +118,58 @@ async function startChat(e) {
         alert(err.message);
     }
 }
+// ============ OFFLINE MESSAGE ============
+async function submitOfflineMessage(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('visitorNameInput').value.trim();
+    const email = document.getElementById('visitorEmailInput').value.trim();
+    const message = document.getElementById('offlineMessageInput').value.trim();
+    const btn = document.getElementById('startBtn');
+
+    if (!name || !email || !message) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="btn-content"><i class="fas fa-spinner fa-spin"></i> Gönderiliyor...</span>';
+
+    try {
+        // Create conversation
+        const res = await fetch(`${WIDGET_URL}/api/chat.php?action=start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                page: getParentUrl(),
+                site_url: getParentOrigin()
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            // Send the offline message
+            await fetch(`${WIDGET_URL}/api/chat.php?action=send`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_id: data.session_id,
+                    message: message
+                })
+            });
+
+            // Show thank you screen
+            document.getElementById('screenPreChat').style.display = 'none';
+            document.getElementById('screenEnd').style.display = 'flex';
+        } else {
+            throw new Error(data.error || 'Gönderme hatası');
+        }
+    } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="btn-content"><i class="fas fa-paper-plane"></i> Mesaj Gönder</span>';
+        alert(err.message);
+    }
+}
 
 // ============ MESSAGES ============
 async function loadMessages() {

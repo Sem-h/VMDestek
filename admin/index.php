@@ -51,11 +51,13 @@ if (!isset($_SESSION['admin_id'])) {
             </div>
         </div>
         <div class="topbar-right">
-            <div class="admin-status" id="adminStatus">
-                <span class="status-dot online"></span>
-                <span>
+            <div class="admin-status-toggle" id="adminStatusToggle" onclick="toggleOnlineStatus()">
+                <span class="status-dot online" id="adminStatusDot"></span>
+                <span id="adminStatusText">
                     <?= htmlspecialchars($_SESSION['admin_name']) ?>
                 </span>
+                <i class="fas fa-circle-dot" id="adminStatusIcon"
+                    style="font-size:10px;margin-left:4px;opacity:0.5"></i>
             </div>
             <a href="settings.php" class="topbar-btn" title="Ayarlar">
                 <i class="fas fa-cog"></i>

@@ -81,27 +81,48 @@ $isOnline = ($adminOnline['cnt'] ?? 0) > 0;
 
             <div class="widget-body prechat-body">
                 <div class="prechat-welcome">
-                    <div class="welcome-emoji">👋</div>
-                    <h3>Merhaba!</h3>
-                    <p>
-                        <?= htmlspecialchars($settings['welcome_message'] ?? 'Size nasıl yardımcı olabiliriz?') ?>
-                    </p>
+                    <?php if ($isOnline): ?>
+                        <div class="welcome-emoji">👋</div>
+                        <h3>Merhaba!</h3>
+                        <p>
+                            <?= htmlspecialchars($settings['welcome_message'] ?? 'Size nasıl yardımcı olabiliriz?') ?>
+                        </p>
+                    <?php else: ?>
+                        <div class="welcome-emoji">📨</div>
+                        <h3>Mesaj Bırakın</h3>
+                        <p>
+                            <?= htmlspecialchars($settings['offline_message'] ?? 'Şu anda çevrimdışıyız. Lütfen mesajınızı bırakın, en kısa sürede dönüş yapacağız.') ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
 
-                <form id="preChatForm" onsubmit="startChat(event)">
+                <form id="preChatForm" onsubmit="<?= $isOnline ? 'startChat(event)' : 'submitOfflineMessage(event)' ?>">
                     <div class="widget-field">
                         <label><i class="fas fa-user"></i> Adınız</label>
                         <input type="text" id="visitorNameInput" placeholder="Adınızı girin" required>
                     </div>
                     <div class="widget-field">
-                        <label><i class="fas fa-envelope"></i> E-posta <span
-                                style="opacity:0.5">(opsiyonel)</span></label>
-                        <input type="email" id="visitorEmailInput" placeholder="E-posta adresiniz">
+                        <label><i class="fas fa-envelope"></i> E-posta <?php if ($isOnline): ?><span
+                                    style="opacity:0.5">(opsiyonel)</span><?php else: ?><span
+                                    style="opacity:0.8; color: var(--w-color);">(gerekli)</span><?php endif; ?></label>
+                        <input type="email" id="visitorEmailInput" placeholder="E-posta adresiniz" <?= $isOnline ? '' : 'required' ?>>
                     </div>
+                    <?php if (!$isOnline): ?>
+                        <div class="widget-field">
+                            <label><i class="fas fa-comment-alt"></i> Mesajınız</label>
+                            <textarea id="offlineMessageInput" placeholder="Mesajınızı yazın..." rows="3" required
+                                style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:inherit;font-size:14px;resize:none;outline:none;transition:border-color 0.2s;"></textarea>
+                        </div>
+                    <?php endif; ?>
                     <button type="submit" class="widget-btn-start" id="startBtn">
                         <span class="btn-content">
-                            <i class="fas fa-comment-dots"></i>
-                            Sohbet Başlat
+                            <?php if ($isOnline): ?>
+                                <i class="fas fa-comment-dots"></i>
+                                Sohbet Başlat
+                            <?php else: ?>
+                                <i class="fas fa-paper-plane"></i>
+                                Mesaj Gönder
+                            <?php endif; ?>
                         </span>
                     </button>
                 </form>

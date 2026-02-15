@@ -315,10 +315,19 @@
                 `;
                 document.head.appendChild(pulseStyle);
 
-                if (data.config.welcome_message) {
+                // Show appropriate greeting based on online status
+                if (data.config.is_online) {
+                    if (data.config.welcome_message) {
+                        greeting.innerHTML = `
+                            <button class="close-greeting" onclick="this.parentElement.classList.remove('show')">&times;</button>
+                            ${data.config.welcome_message} 💬
+                        `;
+                    }
+                } else {
+                    const offMsg = data.config.offline_message || 'Şu anda çevrimdışıyız. Mesajınızı bırakabilirsiniz.';
                     greeting.innerHTML = `
                         <button class="close-greeting" onclick="this.parentElement.classList.remove('show')">&times;</button>
-                        ${data.config.welcome_message} 💬
+                        📨 ${offMsg}
                     `;
                 }
             }
