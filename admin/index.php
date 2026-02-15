@@ -32,6 +32,16 @@ if (!isset($_SESSION['admin_id'])) {
         </div>
         <div class="topbar-center">
             <div class="stats-bar">
+                <div class="stat-item online-agents-wrapper" title="Online Temsilciler">
+                    <i class="fas fa-headset" style="color: var(--success)"></i>
+                    <span id="statOnlineAgents">0</span>
+                    <div class="online-agents-popup" id="onlineAgentsPopup">
+                        <div class="popup-title">Online Temsilciler</div>
+                        <div class="popup-list" id="onlineAgentsList">
+                            <div class="popup-empty">Yükleniyor...</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="stat-item" title="Ziyaretçiler">
                     <i class="fas fa-eye"></i>
                     <span id="statVisitors">0</span>

@@ -841,6 +841,32 @@ async function sendHeartbeatNow() {
             if (data.reminders) {
                 checkReminders(data.reminders);
             }
+            // Load online agents
+            loadOnlineAgents();
+        }
+    } catch (err) { }
+}
+
+async function loadOnlineAgents() {
+    try {
+        const res = await fetch(`${SITE_URL}/api/admin.php?action=online_agents`);
+        const data = await res.json();
+        if (data.success) {
+            const countEl = document.getElementById('statOnlineAgents');
+            const listEl = document.getElementById('onlineAgentsList');
+            countEl.textContent = data.agents.length;
+
+            if (data.agents.length === 0) {
+                listEl.innerHTML = '<div class="popup-empty">Kimse çevrimiçi değil</div>';
+            } else {
+                listEl.innerHTML = data.agents.map(a => `
+                    <div class="popup-agent">
+                        <span class="status-dot online"></span>
+                        <span>${a.name}</span>
+                        <span class="agent-role">${a.role === 'admin' ? 'Admin' : 'Operatör'}</span>
+                    </div>
+                `).join('');
+            }
         }
     } catch (err) { }
 }

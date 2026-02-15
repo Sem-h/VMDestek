@@ -134,6 +134,71 @@ body {
     color: var(--text-secondary);
 }
 
+/* Online Agents Popup */
+.online-agents-wrapper {
+    position: relative;
+    cursor: pointer;
+}
+
+.online-agents-popup {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    min-width: 200px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    z-index: 200;
+    animation: slideDown 0.15s ease;
+}
+
+.online-agents-wrapper:hover .online-agents-popup {
+    display: block;
+}
+
+.popup-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.popup-agent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.popup-agent .status-dot {
+    width: 7px;
+    height: 7px;
+}
+
+.popup-agent .agent-role {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-left: auto;
+}
+
+.popup-empty {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 8px 0;
+}
+
 .admin-status-toggle {
     display: flex;
     align-items: center;
@@ -222,19 +287,20 @@ body {
 
 .sidebar-tabs {
     display: flex;
-    gap: 4px;
+    gap: 2px;
     background: var(--bg-glass);
     border-radius: var(--radius-sm);
     padding: 3px;
+    overflow: hidden;
 }
 
 .tab {
     flex: 1;
-    padding: 8px 6px;
+    padding: 8px 4px;
     border: none;
     background: transparent;
     color: var(--text-muted);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     font-family: inherit;
     border-radius: 6px;
@@ -243,8 +309,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 4px;
     position: relative;
+    white-space: nowrap;
+    min-width: 0;
 }
 
 .tab:hover {

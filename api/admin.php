@@ -90,6 +90,9 @@ switch ($action) {
             jsonError('Method not allowed', 405);
         toggleStatus();
         break;
+    case 'online_agents':
+        getOnlineAgents();
+        break;
     // Notes
     case 'notes':
         getNotes();
@@ -461,6 +464,12 @@ function toggleStatus()
     db()->update("UPDATE admins SET is_online = ?, last_seen = NOW() WHERE id = ?", [$isOnline, $_SESSION['admin_id']]);
 
     echo json_encode(['success' => true, 'is_online' => $isOnline]);
+}
+
+function getOnlineAgents()
+{
+    $agents = db()->fetchAll("SELECT name, role, last_seen FROM admins WHERE is_online = 1 ORDER BY name ASC");
+    echo json_encode(['success' => true, 'agents' => $agents]);
 }
 
 // ============ NOTES ============
