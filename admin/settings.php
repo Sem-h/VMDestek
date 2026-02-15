@@ -1141,7 +1141,10 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
                     }
                     if (s.company_name) document.getElementById('companyName').value = s.company_name;
                     if (s.widget_position) document.getElementById('widgetPosition').value = s.widget_position;
-                    if (s.language) document.getElementById('widgetLanguage').value = s.language;
+                    if (s.language) {
+                        document.getElementById('widgetLanguage').value = s.language;
+                        document.getElementById('widgetLanguage').dataset.initial = s.language;
+                    }
                     if (s.welcome_message) document.getElementById('welcomeMessage').value = s.welcome_message;
                     if (s.offline_message) document.getElementById('offlineMessage').value = s.offline_message;
                     if (s.auto_reply_message) document.getElementById('autoReplyMessage').value = s.auto_reply_message;
@@ -1163,12 +1166,14 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
         }
 
         async function saveAllSettings() {
+            const currentLang = document.getElementById('widgetLanguage').dataset.initial || '';
+            const newLang = document.getElementById('widgetLanguage').value;
             const settings = {
                 widget_color: document.getElementById('widgetColor').value,
                 widget_gradient_end: document.getElementById('widgetGradientEnd').value,
                 company_name: document.getElementById('companyName').value,
                 widget_position: document.getElementById('widgetPosition').value,
-                language: document.getElementById('widgetLanguage').value,
+                language: newLang,
                 welcome_message: document.getElementById('welcomeMessage').value,
                 offline_message: document.getElementById('offlineMessage').value,
                 auto_reply_message: document.getElementById('autoReplyMessage').value,
@@ -1184,7 +1189,13 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
                     body: JSON.stringify(settings)
                 });
                 const data = await res.json();
-                if (data.success) showToast();
+                if (data.success) {
+                    if (currentLang && currentLang !== newLang) {
+                        location.reload();
+                    } else {
+                        showToast();
+                    }
+                }
             } catch (err) {
                 console.error('Save error:', err);
             }
