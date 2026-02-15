@@ -10,10 +10,9 @@ Bu workflow, VMDestek projesinde değişiklik yaptıktan sonra kurulum yapanlara
 
 1. **Kod değişikliklerini yap** — Gerekli düzenlemeleri tamamla.
 
-2. **version.json dosyasını güncelle** — `b:\Projeler\LiveSupport\version.json` dosyasındaki sürüm numarasını artır:
-   - **Küçük düzeltme**: `1.0.0` → `1.0.1` (bug fix)
-   - **Yeni özellik**: `1.0.0` → `1.1.0` (feature)
-   - **Büyük değişiklik**: `1.0.0` → `2.0.0` (breaking change)
+2. **version.json dosyasını otomatik güncelle** — `b:\Projeler\LiveSupport\version.json` dosyasını oku, mevcut sürümün **patch** numarasını (son rakam) 1 artır.
+   - Örnek: `1.0.8` → `1.0.9`, `1.0.9` → `1.0.10`
+   - Kullanıcı açıkça farklı bir sürüm belirtmedikçe her zaman patch artır
    - `build` alanını bugünün tarihine güncelle (YYYYMMDD formatı)
 
 3. **Git'e ekle**

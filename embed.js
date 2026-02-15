@@ -139,6 +139,7 @@
             opacity: 1;
             transform: translateY(0) scale(1);
             pointer-events: all;
+            bottom: 24px;
         }
 
         #vmdestek-iframe {
