@@ -795,6 +795,25 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
             transform: translateY(0);
             opacity: 1;
         }
+        .edit-canned {
+            background: none;
+            border: none;
+            color: #60a5fa;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .edit-canned:hover {
+            background: rgba(96, 165, 250, 0.15);
+            color: #93bbfc;
+        }
+
+        .btn-primary-sm.editing {
+            background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+        }
     </style>
 </head>
 
@@ -998,7 +1017,7 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
                         <textarea id="newCannedMessage"
                             placeholder="<?= $L['canned_message_placeholder'] ?? 'Mesaj içeriği...' ?>"></textarea>
                         <div style="margin-top:10px;text-align:right">
-                            <button class="btn-primary-sm" onclick="addCannedResponse()">
+                            <button class="btn-primary-sm" id="btnAddCanned" onclick="addCannedResponse()">
                                 <i class="fas fa-plus"></i> <?= $L['add_canned'] ?? 'Ekle' ?>
                             </button>
                         </div>
@@ -1216,6 +1235,9 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
                                 <div class="canned-preview">${escapeHtml(r.message)}</div>
                             </div>
                             ${r.shortcut ? `<span class="canned-shortcut-tag">${escapeHtml(r.shortcut)}</span>` : ''}
+                            <button class="edit-canned" onclick="editCanned(${r.id}, '${escapeHtml(r.title).replace(/'/g, "\\'")}', '${escapeHtml(r.message).replace(/'/g, "\\'")}', '${escapeHtml(r.shortcut || '').replace(/'/g, "\\'")}')">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
                             <button class="delete-canned" onclick="deleteCanned(${r.id})">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -1227,22 +1249,45 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
             }
         }
 
+        let editingCannedId = null;
+
+        function editCanned(id, title, message, shortcut) {
+            editingCannedId = id;
+            document.getElementById('newCannedTitle').value = title;
+            document.getElementById('newCannedMessage').value = message;
+            document.getElementById('newCannedShortcut').value = shortcut;
+            const btn = document.getElementById('btnAddCanned');
+            btn.innerHTML = `<i class="fas fa-save"></i> ${LANG.save_btn || 'Kaydet'}`;
+            btn.classList.add('editing');
+            document.getElementById('newCannedTitle').focus();
+        }
+
+        function cancelEditCanned() {
+            editingCannedId = null;
+            document.getElementById('newCannedTitle').value = '';
+            document.getElementById('newCannedMessage').value = '';
+            document.getElementById('newCannedShortcut').value = '';
+            const btn = document.getElementById('btnAddCanned');
+            btn.innerHTML = `<i class="fas fa-plus"></i> ${LANG.add_btn || 'Ekle'}`;
+            btn.classList.remove('editing');
+        }
+
         async function addCannedResponse() {
             const title = document.getElementById('newCannedTitle').value.trim();
             const message = document.getElementById('newCannedMessage').value.trim();
             const shortcut = document.getElementById('newCannedShortcut').value.trim();
             if (!title || !message) return alert(LANG.title_date_required || 'Başlık ve mesaj gerekli');
+            const payload = { title, message, shortcut };
+            if (editingCannedId) payload.id = editingCannedId;
             try {
                 const res = await fetch(`${SITE_URL}/api/admin.php?action=canned_save`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, message, shortcut })
+                    body: JSON.stringify(payload)
                 });
                 const data = await res.json();
                 if (data.success) {
-                    document.getElementById('newCannedTitle').value = '';
-                    document.getElementById('newCannedMessage').value = '';
-                    document.getElementById('newCannedShortcut').value = '';
+                    cancelEditCanned();
                     loadCannedResponses();
                     showToast();
                 }
