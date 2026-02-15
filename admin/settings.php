@@ -17,196 +17,271 @@ if (!isset($_SESSION['admin_id'])) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <style>
-        .settings-page {
+        /* ═══════ SETTINGS LAYOUT ═══════ */
+        .settings-layout {
+            display: flex;
             height: 100vh;
+            padding-top: 56px;
+        }
+
+        /* ═══════ LEFT SIDEBAR NAV ═══════ */
+        .settings-nav {
+            width: 260px;
+            min-width: 260px;
+            background: rgba(15, 15, 35, 0.6);
+            border-right: 1px solid var(--border);
+            padding: 28px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
             overflow-y: auto;
-            padding: 80px 40px 60px;
         }
 
-        .settings-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 40px;
+        .nav-header {
+            padding: 0 12px 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
         }
 
-        .settings-header .back-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            background: var(--bg-glass);
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-size: 16px;
-        }
-
-        .settings-header .back-btn:hover {
-            background: var(--bg-card-hover);
-            color: var(--text-primary);
-            border-color: var(--accent);
-        }
-
-        .settings-header h1 {
-            font-size: 26px;
+        .nav-header h2 {
+            font-size: 18px;
             font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
 
-        .settings-header .header-badge {
+        .nav-header .version-tag {
             font-size: 11px;
-            padding: 4px 12px;
-            background: rgba(102, 126, 234, 0.1);
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 3px 10px;
+            background: rgba(102, 126, 234, 0.15);
+            border: 1px solid rgba(102, 126, 234, 0.25);
             border-radius: 20px;
-            color: var(--accent);
+            color: #93a4f4;
             font-weight: 500;
         }
 
-        /* Section Headers */
-        .section-divider {
-            max-width: 1200px;
-            margin: 40px 0 20px;
+        .nav-item {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid transparent;
+            user-select: none;
         }
 
-        .section-divider:first-of-type {
-            margin-top: 0;
-        }
-
-        .section-divider .section-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .section-divider .section-icon.purple {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-
-        .section-divider .section-icon.emerald {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .section-divider .section-icon.amber {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-
-        .section-divider .section-icon.rose {
-            background: linear-gradient(135deg, #f43f5e, #e11d48);
-        }
-
-        .section-divider .section-icon.sky {
-            background: linear-gradient(135deg, #0ea5e9, #0284c7);
-        }
-
-        .section-divider .section-text h3 {
-            font-size: 16px;
-            font-weight: 700;
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.04);
             color: var(--text-primary);
         }
 
-        .section-divider .section-text p {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
+        .nav-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.25);
+            color: #93a4f4;
         }
 
-        .section-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, var(--border), transparent);
-        }
-
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-        }
-
-        .settings-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 28px;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .settings-card:hover {
-            border-color: rgba(102, 126, 234, 0.15);
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
-        }
-
-        .settings-card h2 {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .settings-card h2 i {
-            width: 32px;
-            height: 32px;
-            background: var(--gradient);
-            border-radius: 8px;
+        .nav-item .nav-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active .nav-icon {
             color: white;
         }
 
-        /* Save Bar */
-        .save-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 16px 40px;
-            background: rgba(15, 15, 30, 0.85);
-            backdrop-filter: blur(20px);
+        .nav-icon.c-purple {
+            background: rgba(102, 126, 234, 0.15);
+            color: #667eea;
+        }
+
+        .nav-item.active .nav-icon.c-purple {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .nav-icon.c-emerald {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+        }
+
+        .nav-item.active .nav-icon.c-emerald {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .nav-icon.c-amber {
+            background: rgba(245, 158, 11, 0.12);
+            color: #f59e0b;
+        }
+
+        .nav-item.active .nav-icon.c-amber {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .nav-icon.c-rose {
+            background: rgba(244, 63, 94, 0.12);
+            color: #f43f5e;
+        }
+
+        .nav-item.active .nav-icon.c-rose {
+            background: linear-gradient(135deg, #f43f5e, #e11d48);
+        }
+
+        .nav-icon.c-sky {
+            background: rgba(14, 165, 233, 0.12);
+            color: #0ea5e9;
+        }
+
+        .nav-item.active .nav-icon.c-sky {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        }
+
+        .nav-item .nav-label {
+            flex: 1;
+        }
+
+        .nav-spacer {
+            flex: 1;
+        }
+
+        .nav-footer {
+            padding: 16px 12px 0;
             border-top: 1px solid var(--border);
+        }
+
+        .btn-save-nav {
+            width: 100%;
+            padding: 12px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            gap: 12px;
-            z-index: 100;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .save-bar .save-hint {
-            font-size: 12px;
+        .btn-save-nav:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+        }
+
+        .btn-back-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
             color: var(--text-muted);
-            margin-right: auto;
+            font-size: 12px;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            margin-top: 10px;
         }
 
-        .save-bar .save-hint i {
-            margin-right: 6px;
-            color: var(--accent);
+        .btn-back-nav:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+        }
+
+        /* ═══════ RIGHT CONTENT ═══════ */
+        .settings-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 36px 48px;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: panelFade 0.3s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes panelFade {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .panel-header {
+            margin-bottom: 32px;
+        }
+
+        .panel-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .panel-header p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ═══════ FORM CARDS ═══════ */
+        .form-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .form-card:hover {
+            border-color: rgba(102, 126, 234, 0.15);
+        }
+
+        .form-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 18px;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .field-row.single {
+            grid-template-columns: 1fr;
         }
 
         .field-group {
-            margin-bottom: 16px;
+            margin-bottom: 0;
         }
 
         .field-group label {
@@ -215,8 +290,6 @@ if (!isset($_SESSION['admin_id'])) {
             font-weight: 500;
             color: var(--text-muted);
             margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .field-group input,
@@ -224,14 +297,14 @@ if (!isset($_SESSION['admin_id'])) {
         .field-group select {
             width: 100%;
             padding: 10px 14px;
-            background: var(--bg-glass);
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
+            border-radius: 8px;
             color: var(--text-primary);
             font-size: 13px;
             font-family: inherit;
             outline: none;
-            transition: var(--transition);
+            transition: all 0.2s;
         }
 
         .field-group input:focus,
@@ -239,6 +312,7 @@ if (!isset($_SESSION['admin_id'])) {
         .field-group select:focus {
             border-color: var(--accent);
             background: rgba(102, 126, 234, 0.06);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.08);
         }
 
         .field-group textarea {
@@ -252,92 +326,81 @@ if (!isset($_SESSION['admin_id'])) {
 
         .color-row {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
         }
 
         .color-row input[type="color"] {
             width: 44px;
-            height: 36px;
+            height: 38px;
             padding: 2px;
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
         }
 
         .color-row input[type="text"] {
             flex: 1;
         }
 
-        .btn-save {
-            padding: 12px 32px;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn-save:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
-        }
-
-        .embed-code {
-            background: var(--bg-secondary);
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .toggle-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+        }
+
+        .toggle-row span {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        /* ═══════ EMBED CODE ═══════ */
+        .embed-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 18px;
             font-family: 'Courier New', monospace;
             font-size: 12px;
-            color: var(--accent);
+            color: #93a4f4;
             word-break: break-all;
-            margin-top: 8px;
             position: relative;
+            margin-bottom: 14px;
         }
 
-        .embed-code .copy-btn {
+        .embed-block .copy-btn {
             position: absolute;
-            top: 8px;
-            right: 8px;
-            padding: 4px 10px;
+            top: 10px;
+            right: 10px;
+            padding: 5px 12px;
             background: var(--gradient);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 11px;
             cursor: pointer;
             font-family: inherit;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            padding: 14px 24px;
-            background: var(--success);
-            color: white;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
             font-weight: 500;
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
+            transition: all 0.2s;
         }
 
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
+        .embed-block .copy-btn:hover {
+            transform: scale(1.05);
         }
 
-        /* Canned Responses Manager */
+        /* ═══════ CANNED RESPONSES ═══════ */
         .canned-list-manager {
-            max-height: 400px;
+            max-height: 360px;
             overflow-y: auto;
         }
 
@@ -345,11 +408,16 @@ if (!isset($_SESSION['admin_id'])) {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 10px 12px;
-            background: var(--bg-glass);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-sm);
-            margin-bottom: 6px;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .canned-manager-item:hover {
+            border-color: rgba(102, 126, 234, 0.2);
         }
 
         .canned-manager-item .canned-info {
@@ -359,7 +427,7 @@ if (!isset($_SESSION['admin_id'])) {
 
         .canned-manager-item .canned-title {
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-primary);
         }
 
@@ -371,86 +439,223 @@ if (!isset($_SESSION['admin_id'])) {
             text-overflow: ellipsis;
         }
 
-        .canned-manager-item .canned-shortcut-tag {
+        .canned-shortcut-tag {
             font-size: 10px;
-            color: var(--accent);
+            color: #93a4f4;
             background: rgba(102, 126, 234, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 500;
         }
 
-        .canned-manager-item .delete-canned {
+        .delete-canned,
+        .delete-admin {
             background: none;
             border: none;
             color: var(--text-muted);
             cursor: pointer;
             font-size: 13px;
-            padding: 4px;
-            transition: var(--transition);
-        }
-
-        .canned-manager-item .delete-canned:hover {
-            color: var(--danger);
-        }
-
-        .add-canned-form {
-            padding: 12px;
-            background: var(--bg-glass);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            margin-top: 12px;
-        }
-
-        .add-canned-form .form-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .add-canned-form input,
-        .add-canned-form textarea {
-            flex: 1;
-            padding: 8px 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
+            padding: 6px;
             border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .delete-canned:hover {
+            color: #f43f5e;
+            background: rgba(244, 63, 94, 0.1);
+        }
+
+        .add-form-box {
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            margin-top: 14px;
+        }
+
+        .add-form-box .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .add-form-box input,
+        .add-form-box textarea,
+        .add-form-box select {
+            flex: 1;
+            padding: 9px 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             color: var(--text-primary);
             font-size: 12px;
             font-family: inherit;
             outline: none;
         }
 
-        .add-canned-form textarea {
+        .add-form-box textarea {
             resize: vertical;
             min-height: 60px;
         }
 
-        .btn-add-canned {
-            padding: 8px 16px;
+        .btn-primary-sm {
+            padding: 9px 18px;
             background: var(--gradient);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .btn-primary-sm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-ghost-sm {
+            padding: 9px 18px;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 12px;
             cursor: pointer;
             font-family: inherit;
         }
 
-        /* Auto Update */
-        .update-card {
-            border: 1px solid rgba(102, 126, 234, 0.2);
-            background: rgba(102, 126, 234, 0.04);
+        /* ═══════ ADMIN USERS ═══════ */
+        .admin-list-manager {
+            max-height: 400px;
+            overflow-y: auto;
         }
 
+        .admin-manager-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .admin-manager-item:hover {
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .admin-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .admin-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .admin-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 3px;
+        }
+
+        .role-badge {
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .role-badge.admin {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .role-badge.operator {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 4px;
+        }
+
+        .online-dot.online {
+            background: #10b981;
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+        }
+
+        .online-dot.offline {
+            background: #6b7280;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .admin-actions button {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .admin-actions button:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-primary);
+        }
+
+        .admin-actions button.delete-admin:hover {
+            color: #f43f5e;
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+
+        /* ═══════ UPDATE SECTION ═══════ */
         .update-version-info {
             display: flex;
             align-items: center;
             gap: 16px;
-            padding: 16px;
-            background: var(--bg-glass);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-sm);
+            padding: 18px 20px;
+            background: rgba(102, 126, 234, 0.04);
+            border: 1px solid rgba(102, 126, 234, 0.15);
+            border-radius: 12px;
             margin-bottom: 16px;
         }
 
@@ -458,12 +663,12 @@ if (!isset($_SESSION['admin_id'])) {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 14px;
+            padding: 7px 16px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border-radius: 20px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .update-status {
@@ -479,11 +684,11 @@ if (!isset($_SESSION['admin_id'])) {
         }
 
         .btn-check-update {
-            padding: 8px 18px;
-            background: var(--bg-glass);
+            padding: 9px 18px;
+            background: rgba(255, 255, 255, 0.04);
             color: var(--text-primary);
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 500;
             cursor: pointer;
@@ -492,16 +697,16 @@ if (!isset($_SESSION['admin_id'])) {
         }
 
         .btn-check-update:hover {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.07);
             border-color: #667eea;
         }
 
         .btn-apply-update {
-            padding: 8px 18px;
+            padding: 9px 18px;
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
@@ -516,30 +721,30 @@ if (!isset($_SESSION['admin_id'])) {
         }
 
         .update-result {
-            padding: 12px 16px;
-            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            border-radius: 10px;
             font-size: 13px;
-            margin-top: 12px;
+            margin-top: 14px;
             display: none;
         }
 
         .update-result.has-update {
             display: block;
-            background: rgba(16, 185, 129, 0.08);
+            background: rgba(16, 185, 129, 0.06);
             border: 1px solid rgba(16, 185, 129, 0.2);
             color: #6ee7b7;
         }
 
         .update-result.no-update {
             display: block;
-            background: rgba(102, 126, 234, 0.08);
+            background: rgba(102, 126, 234, 0.06);
             border: 1px solid rgba(102, 126, 234, 0.2);
             color: #93a4f4;
         }
 
         .update-result.update-error {
             display: block;
-            background: rgba(239, 68, 68, 0.08);
+            background: rgba(239, 68, 68, 0.06);
             border: 1px solid rgba(239, 68, 68, 0.2);
             color: #fca5a5;
         }
@@ -562,178 +767,27 @@ if (!isset($_SESSION['admin_id'])) {
             }
         }
 
-        /* Admin Users Manager */
-        .admin-list-manager {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .admin-manager-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            background: var(--bg-glass);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-sm);
-            margin-bottom: 8px;
-            transition: var(--transition);
-        }
-
-        .admin-manager-item:hover {
-            border-color: var(--accent);
-            background: rgba(102, 126, 234, 0.04);
-        }
-
-        .admin-manager-item .admin-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: var(--gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* ═══════ TOAST ═══════ */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
-            font-weight: 600;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-
-        .admin-manager-item .admin-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .admin-manager-item .admin-name {
+            border-radius: 12px;
             font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .admin-manager-item .admin-meta {
-            font-size: 11px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 2px;
-        }
-
-        .admin-manager-item .role-badge {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 10px;
             font-weight: 500;
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
         }
 
-        .role-badge.admin {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-        }
-
-        .role-badge.operator {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-        }
-
-        .admin-manager-item .online-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .online-dot.online {
-            background: #10b981;
-            box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
-        }
-
-        .online-dot.offline {
-            background: #9ca3af;
-        }
-
-        .admin-actions {
-            display: flex;
-            gap: 6px;
-        }
-
-        .admin-actions button {
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            background: var(--bg-glass);
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-
-        .admin-actions button:hover {
-            background: var(--bg-card-hover);
-            color: var(--text-primary);
-        }
-
-        .admin-actions button.delete-admin:hover {
-            color: var(--danger);
-            border-color: var(--danger);
-        }
-
-        .add-admin-form {
-            padding: 16px;
-            background: var(--bg-glass);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            margin-top: 12px;
-        }
-
-        .add-admin-form .form-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .add-admin-form input,
-        .add-admin-form select {
-            flex: 1;
-            padding: 9px 12px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 12px;
-            font-family: inherit;
-            outline: none;
-        }
-
-        .add-admin-form select {
-            max-width: 130px;
-        }
-
-        .btn-add-admin {
-            padding: 9px 20px;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .btn-cancel-admin {
-            padding: 9px 20px;
-            background: transparent;
-            color: var(--text-muted);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            font-family: inherit;
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
@@ -753,255 +807,278 @@ if (!isset($_SESSION['admin_id'])) {
         </div>
     </header>
 
-    <div class="settings-page">
-        <div class="settings-header">
-            <a href="index.php" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-            <h1>Ayarlar</h1>
-            <span class="header-badge" id="versionBadge">v...</span>
-        </div>
-
-        <!-- ═══════ SECTION: Widget & Görünüm ═══════ -->
-        <div class="section-divider">
-            <div class="section-icon purple"><i class="fas fa-paint-brush"></i></div>
-            <div class="section-text">
-                <h3>Widget & Görünüm</h3>
-                <p>Widget renkleri, şirket adı ve konum ayarları</p>
+    <div class="settings-layout">
+        <!-- ═══════ LEFT SIDEBAR ═══════ -->
+        <nav class="settings-nav">
+            <div class="nav-header">
+                <h2>Ayarlar</h2>
+                <span class="version-tag" id="versionBadge">v...</span>
             </div>
-        </div>
-        <div class="settings-grid">
-            <!-- Widget Appearance -->
-            <div class="settings-card">
-                <h2><i class="fas fa-palette"></i> Widget Görünüm</h2>
 
-                <div class="field-group">
-                    <label>Ana Renk</label>
-                    <div class="color-row">
-                        <input type="color" id="widgetColor" value="#667eea"
-                            onchange="document.getElementById('widgetColorText').value=this.value">
-                        <input type="text" id="widgetColorText" value="#667eea"
-                            oninput="document.getElementById('widgetColor').value=this.value">
+            <div class="nav-item active" onclick="switchTab('appearance', this)">
+                <div class="nav-icon c-purple"><i class="fas fa-palette"></i></div>
+                <span class="nav-label">Görünüm</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('messages', this)">
+                <div class="nav-icon c-emerald"><i class="fas fa-comment-dots"></i></div>
+                <span class="nav-label">Mesajlar</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('canned', this)">
+                <div class="nav-icon c-amber"><i class="fas fa-bolt"></i></div>
+                <span class="nav-label">Hazır Yanıtlar</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('embed', this)">
+                <div class="nav-icon c-sky"><i class="fas fa-code"></i></div>
+                <span class="nav-label">Entegrasyon</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('users', this)">
+                <div class="nav-icon c-rose"><i class="fas fa-users-cog"></i></div>
+                <span class="nav-label">Kullanıcılar</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('update', this)">
+                <div class="nav-icon c-sky"><i class="fas fa-cloud-download-alt"></i></div>
+                <span class="nav-label">Güncelleme</span>
+            </div>
+
+            <div class="nav-spacer"></div>
+
+            <div class="nav-footer">
+                <button class="btn-save-nav" onclick="saveAllSettings()">
+                    <i class="fas fa-save"></i> Ayarları Kaydet
+                </button>
+                <a href="index.php" class="btn-back-nav">
+                    <i class="fas fa-arrow-left"></i> Panele Dön
+                </a>
+            </div>
+        </nav>
+
+        <!-- ═══════ CONTENT AREA ═══════ -->
+        <div class="settings-content">
+
+            <!-- TAB: Görünüm -->
+            <div class="tab-panel active" id="tab-appearance">
+                <div class="panel-header">
+                    <h1>Görünüm Ayarları</h1>
+                    <p>Widget renkleri, şirket bilgileri ve konum tercihlerini yapılandırın</p>
+                </div>
+
+                <div class="form-card">
+                    <div class="form-card-title">Renk Teması</div>
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label>Ana Renk</label>
+                            <div class="color-row">
+                                <input type="color" id="widgetColor" value="#667eea"
+                                    onchange="document.getElementById('widgetColorText').value=this.value">
+                                <input type="text" id="widgetColorText" value="#667eea"
+                                    oninput="document.getElementById('widgetColor').value=this.value">
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <label>Gradient Bitiş Rengi</label>
+                            <div class="color-row">
+                                <input type="color" id="widgetGradientEnd" value="#764ba2"
+                                    onchange="document.getElementById('widgetGradientEndText').value=this.value">
+                                <input type="text" id="widgetGradientEndText" value="#764ba2"
+                                    oninput="document.getElementById('widgetGradientEnd').value=this.value">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="field-group">
-                    <label>Gradient Bitiş Rengi</label>
-                    <div class="color-row">
-                        <input type="color" id="widgetGradientEnd" value="#764ba2"
-                            onchange="document.getElementById('widgetGradientEndText').value=this.value">
-                        <input type="text" id="widgetGradientEndText" value="#764ba2"
-                            oninput="document.getElementById('widgetGradientEnd').value=this.value">
+                <div class="form-card">
+                    <div class="form-card-title">Genel Bilgiler</div>
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label>Şirket Adı</label>
+                            <input type="text" id="companyName" value="VMDestek">
+                        </div>
+                        <div class="field-group">
+                            <label>Widget Konumu</label>
+                            <select id="widgetPosition">
+                                <option value="right">Sağ Alt</option>
+                                <option value="left">Sol Alt</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="field-group">
-                    <label>Şirket Adı</label>
-                    <input type="text" id="companyName" value="VMDestek">
-                </div>
-
-                <div class="field-group">
-                    <label>Widget Konumu</label>
-                    <select id="widgetPosition">
-                        <option value="right">Sağ Alt</option>
-                        <option value="left">Sol Alt</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Working Hours -->
-            <div class="settings-card">
-                <h2><i class="fas fa-clock"></i> Çalışma Saatleri</h2>
-
-                <div class="field-group">
-                    <label>Başlangıç Saati</label>
-                    <input type="time" id="workingHoursStart" value="09:00">
-                </div>
-
-                <div class="field-group">
-                    <label>Bitiş Saati</label>
-                    <input type="time" id="workingHoursEnd" value="18:00">
-                </div>
-            </div>
-        </div>
-
-        <!-- ═══════ SECTION: Mesajlar & İçerik ═══════ -->
-        <div class="section-divider">
-            <div class="section-icon emerald"><i class="fas fa-comment-dots"></i></div>
-            <div class="section-text">
-                <h3>Mesajlar & İçerik</h3>
-                <p>Hoşgeldin mesajı, otomatik yanıtlar ve hazır cevaplar</p>
-            </div>
-        </div>
-        <div class="settings-grid">
-            <!-- Messages -->
-            <div class="settings-card">
-                <h2><i class="fas fa-comment-dots"></i> Mesajlar</h2>
-
-                <div class="field-group">
-                    <label>Hoşgeldin Mesajı</label>
-                    <textarea id="welcomeMessage" rows="2">Merhaba! Size nasıl yardımcı olabiliriz?</textarea>
-                </div>
-
-                <div class="field-group">
-                    <label>Çevrimdışı Mesajı</label>
-                    <textarea id="offlineMessage" rows="2">Şu anda çevrimdışıyız. Lütfen mesajınızı bırakın.</textarea>
-                </div>
-
-                <div class="field-group">
-                    <label>Otomatik Yanıt</label>
-                    <textarea id="autoReplyMessage"
-                        rows="2">Mesajınız alındı. Bir temsilci en kısa sürede size bağlanacak.</textarea>
-                </div>
-
-                <div class="field-group">
-                    <label style="display:flex;align-items:center;gap:8px">
-                        <input type="checkbox" id="autoReplyEnabled" checked style="width:auto;padding:0">
-                        Otomatik yanıt aktif
-                    </label>
-                </div>
-            </div>
-
-            <!-- Canned Responses -->
-            <div class="settings-card">
-                <h2><i class="fas fa-bolt"></i> Hazır Yanıtlar</h2>
-
-                <div class="canned-list-manager" id="cannedListManager">
-                    <!-- Loaded dynamically -->
-                </div>
-
-                <div class="add-canned-form">
-                    <div class="form-row">
-                        <input type="text" id="newCannedTitle" placeholder="Başlık">
-                        <input type="text" id="newCannedShortcut" placeholder="/kısayol" style="max-width:100px">
-                    </div>
-                    <textarea id="newCannedMessage" placeholder="Mesaj içeriği..."></textarea>
-                    <div style="margin-top:8px;text-align:right">
-                        <button class="btn-add-canned" onclick="addCannedResponse()">
-                            <i class="fas fa-plus"></i> Ekle
-                        </button>
+                <div class="form-card">
+                    <div class="form-card-title">Çalışma Saatleri</div>
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label>Başlangıç</label>
+                            <input type="time" id="workingHoursStart" value="09:00">
+                        </div>
+                        <div class="field-group">
+                            <label>Bitiş</label>
+                            <input type="time" id="workingHoursEnd" value="18:00">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- ═══════ SECTION: Entegrasyon ═══════ -->
-        <div class="section-divider">
-            <div class="section-icon amber"><i class="fas fa-code"></i></div>
-            <div class="section-text">
-                <h3>Entegrasyon</h3>
-                <p>Widget embed kodları ve kurulum bilgileri</p>
-            </div>
-        </div>
-        <div class="settings-grid">
-            <!-- Embed Code -->
-            <div class="settings-card" style="grid-column: 1 / -1">
-                <h2><i class="fas fa-code"></i> Embed Kodu</h2>
-                <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">
-                    Aşağıdaki kodu web sitenizin <code>&lt;/body&gt;</code> etiketinden önce yapıştırın:
-                </p>
-                <div class="embed-code" id="embedCode">
-                    <button class="copy-btn" onclick="copyEmbedCode()"><i class="fas fa-copy"></i> Kopyala</button>
-                    <span id="embedCodeText"></span>
+            <!-- TAB: Mesajlar -->
+            <div class="tab-panel" id="tab-messages">
+                <div class="panel-header">
+                    <h1>Mesaj Ayarları</h1>
+                    <p>Ziyaretçilere gösterilecek otomatik mesajları düzenleyin</p>
                 </div>
 
-                <p style="font-size:12px;color:var(--text-muted);margin-top:12px">
-                    <i class="fas fa-info-circle" style="margin-right:4px"></i>
-                    Veya iframe ile doğrudan gömebilirsiniz:
-                </p>
-                <div class="embed-code" id="iframeCode" style="margin-top:8px">
-                    <button class="copy-btn" onclick="copyIframeCode()"><i class="fas fa-copy"></i> Kopyala</button>
-                    <span id="iframeCodeText"></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- ═══════ SECTION: Yönetim ═══════ -->
-        <div class="section-divider">
-            <div class="section-icon rose"><i class="fas fa-shield-alt"></i></div>
-            <div class="section-text">
-                <h3>Yönetim</h3>
-                <p>Kullanıcı rolleri, erişim ve sistem yönetimi</p>
-            </div>
-        </div>
-        <div class="settings-grid">
-            <!-- Admin Users -->
-            <div class="settings-card" style="grid-column: 1 / -1">
-                <h2><i class="fas fa-users-cog"></i> Kullanıcı Yönetimi</h2>
-
-                <div class="admin-list-manager" id="adminListManager">
-                    <!-- Loaded dynamically -->
-                </div>
-
-                <div class="add-admin-form" id="addAdminForm">
-                    <input type="hidden" id="editAdminId" value="0">
-                    <div class="form-row">
-                        <input type="text" id="adminName" placeholder="Ad Soyad">
-                        <input type="text" id="adminUsername" placeholder="Kullanıcı adı">
+                <div class="form-card">
+                    <div class="form-card-title">Karşılama</div>
+                    <div class="field-row single">
+                        <div class="field-group">
+                            <label>Hoşgeldin Mesajı</label>
+                            <textarea id="welcomeMessage" rows="2">Merhaba! Size nasıl yardımcı olabiliriz?</textarea>
+                        </div>
                     </div>
-                    <div class="form-row">
-                        <input type="email" id="adminEmail" placeholder="E-posta (opsiyonel)">
-                        <input type="password" id="adminPassword" placeholder="Şifre">
-                        <select id="adminRole">
-                            <option value="admin">Admin</option>
-                            <option value="operator">Operatör</option>
-                        </select>
-                    </div>
-                    <div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end">
-                        <button class="btn-cancel-admin" id="btnCancelAdmin" onclick="cancelAdminEdit()"
-                            style="display:none">
-                            İptal
-                        </button>
-                        <button class="btn-add-admin" onclick="saveAdminUser()">
-                            <i class="fas fa-plus" id="adminFormIcon"></i>
-                            <span id="adminFormBtnText">Kullanıcı Ekle</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ═══════ SECTION: Sistem ═══════ -->
-        <div class="section-divider">
-            <div class="section-icon sky"><i class="fas fa-cloud-download-alt"></i></div>
-            <div class="section-text">
-                <h3>Sistem</h3>
-                <p>Otomatik güncelleme ve sürüm kontrolü</p>
-            </div>
-        </div>
-        <div class="settings-grid" style="margin-bottom:80px">
-            <!-- Auto Update -->
-            <div class="settings-card update-card" style="grid-column: 1 / -1">
-                <h2><i class="fas fa-cloud-download-alt"></i> Sistem Güncellemesi</h2>
-
-                <div class="update-version-info">
-                    <div class="update-version-badge">
-                        <i class="fas fa-tag"></i>
-                        <span id="currentVersion">v...</span>
-                    </div>
-                    <div class="update-status" id="updateStatus">
-                        Güncel sürüm bilgisi yükleniyor...
-                    </div>
-                    <div class="update-actions">
-                        <button class="btn-check-update" onclick="checkForUpdate()" id="btnCheckUpdate">
-                            <i class="fas fa-sync-alt"></i> Güncelleme Kontrol Et
-                        </button>
-                        <button class="btn-apply-update" onclick="applyUpdate()" id="btnApplyUpdate">
-                            <i class="fas fa-download"></i> Güncelle
-                        </button>
+                    <div class="field-row single">
+                        <div class="field-group">
+                            <label>Çevrimdışı Mesajı</label>
+                            <textarea id="offlineMessage"
+                                rows="2">Şu anda çevrimdışıyız. Lütfen mesajınızı bırakın.</textarea>
+                        </div>
                     </div>
                 </div>
 
-                <div class="update-result" id="updateResult"></div>
+                <div class="form-card">
+                    <div class="form-card-title">Otomatik Yanıt</div>
+                    <div class="field-row single">
+                        <div class="field-group">
+                            <label>Otomatik Yanıt Mesajı</label>
+                            <textarea id="autoReplyMessage"
+                                rows="2">Mesajınız alındı. Bir temsilci en kısa sürede size bağlanacak.</textarea>
+                        </div>
+                    </div>
+                    <div class="toggle-row">
+                        <input type="checkbox" id="autoReplyEnabled" checked>
+                        <span>Otomatik yanıt aktif</span>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Fixed Save Bar -->
-    <div class="save-bar">
-        <span class="save-hint"><i class="fas fa-info-circle"></i> Değişikliklerinizi kaydetmeyi unutmayın</span>
-        <button class="btn-save" onclick="saveAllSettings()">
-            <i class="fas fa-save" style="margin-right:8px"></i>
-            Ayarları Kaydet
-        </button>
+            <!-- TAB: Hazır Yanıtlar -->
+            <div class="tab-panel" id="tab-canned">
+                <div class="panel-header">
+                    <h1>Hazır Yanıtlar</h1>
+                    <p>Sık kullanılan mesajları kısayollarla hızlıca gönderin</p>
+                </div>
+
+                <div class="form-card">
+                    <div class="canned-list-manager" id="cannedListManager"></div>
+
+                    <div class="add-form-box">
+                        <div class="form-row">
+                            <input type="text" id="newCannedTitle" placeholder="Başlık">
+                            <input type="text" id="newCannedShortcut" placeholder="/kısayol" style="max-width:100px">
+                        </div>
+                        <textarea id="newCannedMessage" placeholder="Mesaj içeriği..."></textarea>
+                        <div style="margin-top:10px;text-align:right">
+                            <button class="btn-primary-sm" onclick="addCannedResponse()">
+                                <i class="fas fa-plus"></i> Ekle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Entegrasyon -->
+            <div class="tab-panel" id="tab-embed">
+                <div class="panel-header">
+                    <h1>Entegrasyon</h1>
+                    <p>Widget'ı web sitenize eklemek için aşağıdaki kodları kullanın</p>
+                </div>
+
+                <div class="form-card">
+                    <div class="form-card-title">JavaScript Embed</div>
+                    <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">
+                        <code>&lt;/body&gt;</code> etiketinden önce yapıştırın:
+                    </p>
+                    <div class="embed-block" id="embedCode">
+                        <button class="copy-btn" onclick="copyEmbedCode()"><i class="fas fa-copy"></i> Kopyala</button>
+                        <span id="embedCodeText"></span>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <div class="form-card-title">iframe Embed</div>
+                    <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">
+                        Alternatif olarak iframe ile doğrudan gömebilirsiniz:
+                    </p>
+                    <div class="embed-block" id="iframeCode">
+                        <button class="copy-btn" onclick="copyIframeCode()"><i class="fas fa-copy"></i> Kopyala</button>
+                        <span id="iframeCodeText"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Kullanıcılar -->
+            <div class="tab-panel" id="tab-users">
+                <div class="panel-header">
+                    <h1>Kullanıcı Yönetimi</h1>
+                    <p>Admin ve operatör hesaplarını yönetin</p>
+                </div>
+
+                <div class="form-card">
+                    <div class="admin-list-manager" id="adminListManager"></div>
+
+                    <div class="add-form-box" id="addAdminForm">
+                        <input type="hidden" id="editAdminId" value="0">
+                        <div class="form-row">
+                            <input type="text" id="adminName" placeholder="Ad Soyad">
+                            <input type="text" id="adminUsername" placeholder="Kullanıcı adı">
+                        </div>
+                        <div class="form-row">
+                            <input type="email" id="adminEmail" placeholder="E-posta (opsiyonel)">
+                            <input type="password" id="adminPassword" placeholder="Şifre">
+                            <select id="adminRole" style="max-width:120px">
+                                <option value="admin">Admin</option>
+                                <option value="operator">Operatör</option>
+                            </select>
+                        </div>
+                        <div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end">
+                            <button class="btn-ghost-sm" id="btnCancelAdmin" onclick="cancelAdminEdit()"
+                                style="display:none">İptal</button>
+                            <button class="btn-primary-sm" onclick="saveAdminUser()">
+                                <i class="fas fa-plus" id="adminFormIcon"></i>
+                                <span id="adminFormBtnText">Kullanıcı Ekle</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Güncelleme -->
+            <div class="tab-panel" id="tab-update">
+                <div class="panel-header">
+                    <h1>Sistem Güncellemesi</h1>
+                    <p>GitHub üzerinden otomatik güncelleme kontrolü</p>
+                </div>
+
+                <div class="form-card">
+                    <div class="update-version-info">
+                        <div class="update-version-badge">
+                            <i class="fas fa-tag"></i>
+                            <span id="currentVersion">v...</span>
+                        </div>
+                        <div class="update-status" id="updateStatus">
+                            Güncel sürüm bilgisi yükleniyor...
+                        </div>
+                        <div class="update-actions">
+                            <button class="btn-check-update" onclick="checkForUpdate()" id="btnCheckUpdate">
+                                <i class="fas fa-sync-alt"></i> Güncelleme Kontrol Et
+                            </button>
+                            <button class="btn-apply-update" onclick="applyUpdate()" id="btnApplyUpdate">
+                                <i class="fas fa-download"></i> Güncelle
+                            </button>
+                        </div>
+                    </div>
+                    <div class="update-result" id="updateResult"></div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <div class="toast" id="toast">
@@ -1012,7 +1089,15 @@ if (!isset($_SESSION['admin_id'])) {
     <script>
         const SITE_URL = '<?= SITE_URL ?>';
 
-        // Load settings
+        // ═══════ TAB SWITCHING ═══════
+        function switchTab(tabId, navEl) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            navEl.classList.add('active');
+        }
+
+        // ═══════ LOAD SETTINGS ═══════
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const res = await fetch(`${SITE_URL}/api/admin.php?action=settings`);
@@ -1039,23 +1124,14 @@ if (!isset($_SESSION['admin_id'])) {
             } catch (err) {
                 console.error('Load settings error:', err);
             }
-
-            // Generate embed code
             updateEmbedCode();
-
-            // Load canned responses
             loadCannedResponses();
-
-            // Load admin users
             loadAdminUsers();
         });
 
         function updateEmbedCode() {
-            const embedText = `&lt;script src="${SITE_URL}/embed.js"&gt;&lt;/script&gt;`;
-            document.getElementById('embedCodeText').innerHTML = embedText;
-
-            const iframeText = `&lt;iframe src="${SITE_URL}/widget/" style="position:fixed;bottom:0;right:0;width:400px;height:600px;border:none;z-index:9999"&gt;&lt;/iframe&gt;`;
-            document.getElementById('iframeCodeText').innerHTML = iframeText;
+            document.getElementById('embedCodeText').innerHTML = `&lt;script src="${SITE_URL}/embed.js"&gt;&lt;/script&gt;`;
+            document.getElementById('iframeCodeText').innerHTML = `&lt;iframe src="${SITE_URL}/widget/" style="position:fixed;bottom:0;right:0;width:400px;height:600px;border:none;z-index:9999"&gt;&lt;/iframe&gt;`;
         }
 
         async function saveAllSettings() {
@@ -1078,17 +1154,14 @@ if (!isset($_SESSION['admin_id'])) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(settings)
                 });
-
                 const data = await res.json();
-                if (data.success) {
-                    showToast();
-                }
+                if (data.success) showToast();
             } catch (err) {
                 console.error('Save error:', err);
             }
         }
 
-        // Canned Responses
+        // ═══════ CANNED RESPONSES ═══════
         async function loadCannedResponses() {
             try {
                 const res = await fetch(`${SITE_URL}/api/admin.php?action=canned`);
@@ -1117,16 +1190,13 @@ if (!isset($_SESSION['admin_id'])) {
             const title = document.getElementById('newCannedTitle').value.trim();
             const message = document.getElementById('newCannedMessage').value.trim();
             const shortcut = document.getElementById('newCannedShortcut').value.trim();
-
             if (!title || !message) return alert('Başlık ve mesaj gerekli');
-
             try {
                 const res = await fetch(`${SITE_URL}/api/admin.php?action=canned_save`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ title, message, shortcut })
                 });
-
                 const data = await res.json();
                 if (data.success) {
                     document.getElementById('newCannedTitle').value = '';
@@ -1142,14 +1212,12 @@ if (!isset($_SESSION['admin_id'])) {
 
         async function deleteCanned(id) {
             if (!confirm('Bu hazır yanıtı silmek istediğinize emin misiniz?')) return;
-
             try {
                 const res = await fetch(`${SITE_URL}/api/admin.php?action=canned_delete`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id })
                 });
-
                 const data = await res.json();
                 if (data.success) loadCannedResponses();
             } catch (err) { }
@@ -1181,7 +1249,7 @@ if (!isset($_SESSION['admin_id'])) {
             return div.innerHTML;
         }
 
-        // =========== ADMIN USERS ===========
+        // ═══════ ADMIN USERS ═══════
         async function loadAdminUsers() {
             try {
                 const res = await fetch(`${SITE_URL}/api/admin.php?action=admin_list`);
@@ -1269,7 +1337,6 @@ if (!isset($_SESSION['admin_id'])) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id, name, username, email, password, role })
                 });
-
                 const data = await res.json();
                 if (data.success) {
                     cancelAdminEdit();
@@ -1285,14 +1352,12 @@ if (!isset($_SESSION['admin_id'])) {
 
         async function deleteAdminUser(id) {
             if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
-
             try {
                 const res = await fetch(`${SITE_URL}/api/admin.php?action=admin_delete`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id })
                 });
-
                 const data = await res.json();
                 if (data.success) {
                     loadAdminUsers();
@@ -1305,7 +1370,7 @@ if (!isset($_SESSION['admin_id'])) {
             }
         }
 
-        // === AUTO UPDATE ===
+        // ═══════ AUTO UPDATE ═══════
         async function loadVersionInfo() {
             try {
                 const res = await fetch(`${SITE_URL}/version.json?t=${Date.now()}`);
@@ -1387,10 +1452,7 @@ if (!isset($_SESSION['admin_id'])) {
                     result.innerHTML = `<i class="fas fa-check-circle"></i> <strong>${data.message}</strong><br><small>${data.files_updated} dosya güncellendi. Sayfa yeniden yükleniyor...</small>`;
                     result.style.display = 'block';
                     btn.style.display = 'none';
-
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
+                    setTimeout(() => { window.location.reload(); }, 2000);
                 } else {
                     result.className = 'update-result update-error';
                     result.innerHTML = `<i class="fas fa-times-circle"></i> ${data.error || 'Güncelleme sırasında bir hata oluştu.'}`;
@@ -1407,7 +1469,6 @@ if (!isset($_SESSION['admin_id'])) {
             }
         }
 
-        // Sayfa yüklendiğinde sürüm bilgisini yükle
         loadVersionInfo();
     </script>
 </body>
