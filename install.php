@@ -61,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $dbPass,
                     [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
                 );
+                $pdo->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
 
                 // Veritabanını oluştur
                 $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$dbName}` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
@@ -79,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     `is_online` TINYINT(1) NOT NULL DEFAULT 0,
                     `last_seen` DATETIME DEFAULT NULL,
                     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-                ) ENGINE=InnoDB;
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
                 CREATE TABLE IF NOT EXISTS `conversations` (
                     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -101,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     `is_visitor_typing` TINYINT(1) NOT NULL DEFAULT 0,
                     `is_admin_typing` TINYINT(1) NOT NULL DEFAULT 0,
                     FOREIGN KEY (`assigned_admin_id`) REFERENCES `admins`(`id`) ON DELETE SET NULL
-                ) ENGINE=InnoDB;
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
                 CREATE TABLE IF NOT EXISTS `messages` (
                     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -113,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     `is_read` TINYINT(1) NOT NULL DEFAULT 0,
                     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`) ON DELETE CASCADE
-                ) ENGINE=InnoDB;
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
                 CREATE TABLE IF NOT EXISTS `canned_responses` (
                     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -122,13 +123,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     `shortcut` VARCHAR(20) DEFAULT NULL,
                     `category` VARCHAR(50) DEFAULT 'Genel',
                     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-                ) ENGINE=InnoDB;
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
                 CREATE TABLE IF NOT EXISTS `settings` (
                     `setting_key` VARCHAR(50) PRIMARY KEY,
                     `setting_value` TEXT NOT NULL,
                     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                ) ENGINE=InnoDB;
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
                 CREATE TABLE IF NOT EXISTS `conversation_notes` (
                     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -139,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`) ON DELETE CASCADE,
                     FOREIGN KEY (`admin_id`) REFERENCES `admins`(`id`) ON DELETE CASCADE
-                ) ENGINE=InnoDB;
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
                 CREATE TABLE IF NOT EXISTS `conversation_reminders` (
                     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -152,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`) ON DELETE CASCADE,
                     FOREIGN KEY (`admin_id`) REFERENCES `admins`(`id`) ON DELETE CASCADE
-                ) ENGINE=InnoDB;
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
                 ";
 
                 // Her tabloyu ayrı ayrı çalıştır
@@ -275,6 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $dbInfo['pass'],
                         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
                     );
+                    $pdo->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
 
                     // Admin kullanıcı oluştur
                     $hash = password_hash($adminPass, PASSWORD_DEFAULT);

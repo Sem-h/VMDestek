@@ -20,6 +20,7 @@ class Database
                 PDO::ATTR_EMULATE_PREPARES => false,
             ];
             $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+            $this->pdo->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(['error' => 'Veritabanı bağlantı hatası']);
