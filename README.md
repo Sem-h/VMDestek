@@ -1,7 +1,7 @@
 # VMDestek - Canlı Destek Sistemi
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Versiyon-1.0.16-blue" alt="Version">
+  <img src="https://img.shields.io/badge/Versiyon-1.0.21-blue" alt="Version">
   <img src="https://img.shields.io/badge/PHP-7.4+-green" alt="PHP">
   <img src="https://img.shields.io/badge/MySQL-5.7+-orange" alt="MySQL">
   <img src="https://img.shields.io/badge/Lisans-MIT-yellow" alt="License">
@@ -20,6 +20,7 @@ Web sitelerinize kolayca entegre edebileceğiniz, hafif ve modern bir canlı des
 - 📋 **Hazır Yanıtlar** — Sık kullanılan cevapları tek tıkla gönder (`/` kısayolları)
 - 🔔 **Bildirimler** — Yeni mesaj ses bildirimi
 - 📱 **Responsive Tasarım** — Mobil ve masaüstü uyumlu
+- 🌍 **Çoklu Dil Desteği** — Türkçe, İngilizce, Arapça (RTL) — Widget ve admin panel
 - 🔄 **Otomatik Güncelleme** — Admin panelinden tek tıkla güncelle
 - 🌐 **Kolay Entegrasyon** — Tek satır `<script>` kodu ile web sitesine ekle
 - ⭐ **Konuşma Değerlendirme** — Sohbet sonrası 5 yıldızlı puanlama
@@ -44,9 +45,14 @@ LiveSupport/
 ├── widget/                 # Eski widget (iframe, deprecated)
 │   ├── index.php
 │   └── js/widget.js
+├── lang/                   # Dil dosyaları
+│   ├── tr.json             # Türkçe çeviriler
+│   ├── en.json             # İngilizce çeviriler
+│   └── ar.json             # Arapça çeviriler (RTL)
 ├── embed.js                # Ana widget script — sitelere eklenen kod
 │                           # İçerisinde: CSS, HTML, chat mantığı, resim upload,
 │                           # lightbox, polling, heartbeat — hepsi tek dosyada
+├── lang.php                # Dil yükleme helper fonksiyonları
 ├── db.php                  # Veritabanı bağlantı sınıfı (PDO wrapper)
 ├── config.php              # Yapılandırma dosyası (DB bilgileri, site URL)
 ├── install.php             # Web tabanlı kurulum sihirbazı
@@ -146,7 +152,7 @@ Admin panelinden (`/admin/settings.php`) aşağıdaki ayarlar yapılabilir:
 
 | Sekme | Ayarlar |
 |-------|---------|
-| **Görünüm** | Widget rengi, gradient, şirket adı, logo |
+| **Görünüm** | Widget rengi, gradient, şirket adı, logo, dil seçimi |
 | **Mesajlar** | Karşılama mesajı, çevrimdışı mesajı, otomatik yanıt |
 | **Hazır Yanıtlar** | Kısayollu cevap şablonları ekleme/düzenleme |
 | **Entegrasyon** | JS embed kodu, iframe embed kodu |
@@ -179,6 +185,8 @@ Güncelleme mekanizması GitHub raw content üzerinden çalışır:
 
 | Sürüm | Tarih | Değişiklikler |
 |-------|-------|--------------|
+| 1.0.21 | 2026-02-15 | Admin panel çoklu dil desteği düzeltmeleri (db.php include fix) |
+| 1.0.17 | 2026-02-15 | Widget çoklu dil desteği (TR/EN/AR), RTL desteği |
 | 1.0.16 | 2026-02-15 | Ziyaretçi resim gönderme (upload, önizleme, lightbox) |
 | 1.0.15 | 2026-02-15 | Widget CSS scoped selectors, host sayfa izolasyonu |
 | 1.0.14 | 2026-02-15 | Widget tasarım iyileştirmeleri, form field düzeltmeleri |
