@@ -160,6 +160,12 @@ if (!isset($_SESSION['admin_id'])) {
                         </div>
                     </div>
                     <div class="chat-header-actions">
+                        <button class="action-btn" onclick="showTransferModal()" title="Temsilciye Aktar">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                        <button class="action-btn" onclick="leaveConversation()" title="Görüşmeden Ayrıl">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
                         <button class="action-btn" onclick="togglePanel('notes')" title="Notlar">
                             <i class="fas fa-sticky-note"></i>
                         </button>
@@ -290,6 +296,19 @@ if (!isset($_SESSION['admin_id'])) {
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Transfer Modal -->
+    <div class="modal-overlay" id="transferModal" style="display:none" onclick="hideTransferModal(event)">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fas fa-exchange-alt"></i> Temsilciye Aktar</h3>
+                <button class="modal-close" onclick="hideTransferModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="transferAgentList">
+                <div class="popup-empty">Yükleniyor...</div>
+            </div>
+        </div>
     </div>
 
     <!-- Audio notification -->

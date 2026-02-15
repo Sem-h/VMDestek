@@ -415,6 +415,96 @@ async function closeConversation() {
     }
 }
 
+// ============ TRANSFER ============
+async function showTransferModal() {
+    if (!currentConversationId) return;
+    document.getElementById('transferModal').style.display = 'flex';
+
+    try {
+        const res = await fetch(`${SITE_URL}/api/admin.php?action=admin_list`);
+        const data = await res.json();
+        const listEl = document.getElementById('transferAgentList');
+
+        if (data.success && data.admins) {
+            const otherAgents = data.admins.filter(a => a.id != ADMIN_ID);
+            if (otherAgents.length === 0) {
+                listEl.innerHTML = '<div class="popup-empty">Başka temsilci bulunmuyor</div>';
+            } else {
+                listEl.innerHTML = otherAgents.map(a => `
+                    <div class="transfer-agent-item" onclick="transferToAgent(${a.id}, '${a.name.replace(/'/g, "\\'")}')">
+                        <div class="agent-avatar">${a.name.charAt(0).toUpperCase()}</div>
+                        <div class="agent-info">
+                            <div class="agent-name">${a.name}</div>
+                            <div class="agent-role-label">
+                                <span class="status-dot ${a.is_online == 1 ? 'online' : ''}" style="display:inline-block;width:6px;height:6px;vertical-align:middle;margin-right:4px"></span>
+                                ${a.is_online == 1 ? 'Çevrimiçi' : 'Çevrimdışı'} · ${a.role === 'admin' ? 'Admin' : 'Operatör'}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+    } catch (err) {
+        console.error('Transfer modal error:', err);
+    }
+}
+
+function hideTransferModal(e) {
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById('transferModal').style.display = 'none';
+}
+
+async function transferToAgent(targetAdminId, targetName) {
+    if (!currentConversationId) return;
+    if (!confirm(`Görüşmeyi "${targetName}" temsilcisine aktarmak istediğinize emin misiniz?`)) return;
+
+    try {
+        const res = await fetch(`${SITE_URL}/api/admin.php?action=transfer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                conversation_id: currentConversationId,
+                target_admin_id: targetAdminId
+            })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            hideTransferModal();
+            currentConversationId = null;
+            document.getElementById('chatActive').style.display = 'none';
+            document.getElementById('chatEmpty').style.display = 'flex';
+            loadConversations();
+        }
+    } catch (err) {
+        console.error('Transfer error:', err);
+    }
+}
+
+// ============ LEAVE CONVERSATION ============
+async function leaveConversation() {
+    if (!currentConversationId) return;
+    if (!confirm('Bu görüşmeden ayrılmak istediğinize emin misiniz?')) return;
+
+    try {
+        const res = await fetch(`${SITE_URL}/api/admin.php?action=leave`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ conversation_id: currentConversationId })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            currentConversationId = null;
+            document.getElementById('chatActive').style.display = 'none';
+            document.getElementById('chatEmpty').style.display = 'flex';
+            loadConversations();
+        }
+    } catch (err) {
+        console.error('Leave conversation error:', err);
+    }
+}
+
 // ============ SIDE PANEL (Info/Notes/Reminders) ============
 function togglePanel(tab) {
     const panel = document.getElementById('sidePanel');

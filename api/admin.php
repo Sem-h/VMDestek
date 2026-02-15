@@ -48,6 +48,18 @@ switch ($action) {
         }
         assignConversation();
         break;
+    case 'transfer':
+        if ($method !== 'POST') {
+            jsonError('Method not allowed', 405);
+        }
+        transferConversation();
+        break;
+    case 'leave':
+        if ($method !== 'POST') {
+            jsonError('Method not allowed', 405);
+        }
+        leaveConversation();
+        break;
     case 'typing':
         if ($method !== 'POST') {
             jsonError('Method not allowed', 405);
@@ -276,6 +288,67 @@ function assignConversation()
     db()->update(
         "UPDATE conversations SET assigned_admin_id = ? WHERE id = ?",
         [$adminId ?: null, $convId]
+    );
+
+    echo json_encode(['success' => true]);
+}
+
+function transferConversation()
+{
+    $data = json_decode(file_get_contents('php://input'), true);
+    $convId = (int) ($data['conversation_id'] ?? 0);
+    $targetAdminId = (int) ($data['target_admin_id'] ?? 0);
+
+    if ($convId <= 0 || $targetAdminId <= 0) {
+        jsonError('Konuşma ID ve hedef temsilci gerekli');
+    }
+
+    // Get current admin name and target admin name
+    $currentAdminName = $_SESSION['admin_name'] ?? 'Temsilci';
+    $targetAdmin = db()->fetch("SELECT name FROM admins WHERE id = ?", [$targetAdminId]);
+
+    if (!$targetAdmin) {
+        jsonError('Hedef temsilci bulunamadı');
+    }
+
+    $targetName = $targetAdmin['name'];
+
+    // Send system message to visitor
+    db()->insert(
+        "INSERT INTO messages (conversation_id, sender_type, sender_name, message, message_type) VALUES (?, 'system', 'Sistem', ?, 'system')",
+        [$convId, "Görüşme {$currentAdminName} tarafından {$targetName} temsilcisine aktarıldı."]
+    );
+
+    // Reassign conversation
+    db()->update(
+        "UPDATE conversations SET assigned_admin_id = ?, last_message_at = NOW() WHERE id = ?",
+        [$targetAdminId, $convId]
+    );
+
+    echo json_encode(['success' => true, 'target_name' => $targetName]);
+}
+
+function leaveConversation()
+{
+    $data = json_decode(file_get_contents('php://input'), true);
+    $convId = (int) ($data['conversation_id'] ?? 0);
+
+    if ($convId <= 0) {
+        jsonError('Konuşma ID gerekli');
+    }
+
+    $adminName = $_SESSION['admin_name'] ?? 'Temsilci';
+
+    // Send system message
+    db()->insert(
+        "INSERT INTO messages (conversation_id, sender_type, sender_name, message, message_type) VALUES (?, 'system', 'Sistem', ?, 'system')",
+        [$convId, "{$adminName} görüşmeden ayrıldı. Başka bir temsilci size yardımcı olacak."]
+    );
+
+    // Set conversation back to waiting
+    db()->update(
+        "UPDATE conversations SET assigned_admin_id = NULL, status = 'waiting', last_message_at = NOW() WHERE id = ?",
+        [$convId]
     );
 
     echo json_encode(['success' => true]);
