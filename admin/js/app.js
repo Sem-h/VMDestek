@@ -269,11 +269,19 @@ function renderMessages(messages) {
             `;
         } else {
             const initials = getInitials(msg.sender_name || (msg.sender_type === 'admin' ? 'A' : 'Z'));
+            const isImage = msg.message_type === 'image';
+            let bubbleHtml;
+            if (isImage) {
+                const imgUrl = msg.message.startsWith('http') ? msg.message : `${SITE_URL}/${msg.message}`;
+                bubbleHtml = `<div class="msg-bubble msg-image-bubble"><img src="${imgUrl}" alt="Resim" style="max-width:220px;max-height:220px;border-radius:10px;cursor:pointer;display:block;object-fit:cover" onclick="window.open('${imgUrl}','_blank')" loading="lazy"></div>`;
+            } else {
+                bubbleHtml = `<div class="msg-bubble">${formatMessage(msg.message)}</div>`;
+            }
             div.innerHTML = `
                 <div class="msg-avatar">${initials}</div>
                 <div class="msg-content">
                     <span class="msg-name">${escapeHtml(msg.sender_name || '')}</span>
-                    <div class="msg-bubble">${formatMessage(msg.message)}</div>
+                    ${bubbleHtml}
                     <span class="msg-time">${formatTime(msg.created_at)}</span>
                 </div>
             `;

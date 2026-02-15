@@ -47,6 +47,12 @@ switch ($action) {
         }
         rateConversation();
         break;
+    case 'upload':
+        if ($method !== 'POST') {
+            jsonError('Method not allowed', 405);
+        }
+        uploadImage();
+        break;
     case 'status':
         getStatus();
         break;
@@ -297,6 +303,80 @@ function getStatus()
     $config['is_online'] = $online;
 
     echo json_encode(['success' => true, 'config' => $config]);
+}
+
+function uploadImage()
+{
+    $sessionId = $_POST['session_id'] ?? '';
+    if (empty($sessionId)) {
+        jsonError('Session ID gerekli');
+    }
+
+    $conv = db()->fetch("SELECT id, visitor_name, status FROM conversations WHERE session_id = ?", [$sessionId]);
+    if (!$conv) {
+        jsonError('Konuşma bulunamadı', 404);
+    }
+    if ($conv['status'] === 'closed') {
+        jsonError('Bu konuşma kapatılmış');
+    }
+
+    if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+        jsonError('Dosya yüklenemedi');
+    }
+
+    $file = $_FILES['image'];
+    $maxSize = 5 * 1024 * 1024; // 5MB
+    if ($file['size'] > $maxSize) {
+        jsonError('Dosya boyutu çok büyük (max 5MB)');
+    }
+
+    // Validate MIME type
+    $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mimeType = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+
+    if (!in_array($mimeType, $allowedMimes)) {
+        jsonError('Sadece resim dosyaları yüklenebilir (jpg, png, gif, webp)');
+    }
+
+    // Validate extension
+    $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, $allowedExts)) {
+        jsonError('Geçersiz dosya uzantısı');
+    }
+
+    // Generate unique filename
+    $uploadDir = __DIR__ . '/../uploads/chat/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $filename = 'img_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
+    $filepath = $uploadDir . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+        jsonError('Dosya kaydetme hatası');
+    }
+
+    // Save message with image path
+    $imageUrl = 'uploads/chat/' . $filename;
+    $msgId = db()->insert(
+        "INSERT INTO messages (conversation_id, sender_type, sender_name, message, message_type) VALUES (?, 'visitor', ?, ?, 'image')",
+        [$conv['id'], $conv['visitor_name'], $imageUrl]
+    );
+
+    db()->update(
+        "UPDATE conversations SET last_message_at = NOW(), is_visitor_typing = 0 WHERE id = ?",
+        [$conv['id']]
+    );
+
+    echo json_encode([
+        'success' => true,
+        'message_id' => (int) $msgId,
+        'image_url' => $imageUrl
+    ]);
 }
 
 function jsonError($message, $code = 400)

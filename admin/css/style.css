@@ -1616,3 +1616,19 @@ body {
     font-size: 11px;
     color: var(--text-muted);
 }
+
+/* ============ IMAGE MESSAGE ============ */
+.msg-image-bubble {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.msg-image-bubble img {
+    transition: opacity 0.2s;
+}
+
+.msg-image-bubble img:hover {
+    opacity: 0.85;
+}

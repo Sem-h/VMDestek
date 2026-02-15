@@ -161,6 +161,21 @@
         #vmd-widget .vmd-star{font-size:34px!important;color:#ddd!important;cursor:pointer!important;transition:all .2s;background:none!important;border:none!important;line-height:1!important}
         #vmd-widget .vmd-star:hover,#vmd-widget .vmd-star.active{color:#fbbf24!important;transform:scale(1.2)}
         #vmd-widget .vmd-star.active{text-shadow:0 2px 12px rgba(251,191,36,.4)}
+
+        /* ═══════ IMAGE MESSAGES ═══════ */
+        #vmd-widget .vmd-msg-img{max-width:200px!important;max-height:200px!important;border-radius:12px!important;cursor:pointer!important;transition:opacity .2s!important;display:block!important;object-fit:cover!important}
+        #vmd-widget .vmd-msg-img:hover{opacity:.85!important}
+        #vmd-widget .vmd-msg.visitor .vmd-msg-bbl.has-img{background:transparent!important;padding:0!important}
+        #vmd-widget .vmd-msg.admin .vmd-msg-bbl.has-img{background:transparent!important;border:none!important;box-shadow:none!important;padding:0!important}
+        #vmd-widget .vmd-attach{width:36px!important;height:36px!important;min-width:36px!important;border:none!important;background:none!important;color:#b0b5c3!important;cursor:pointer!important;transition:all .2s;display:flex!important;align-items:center!important;justify-content:center!important;font-size:16px!important;border-radius:50%!important}
+        #vmd-widget .vmd-attach:hover{color:var(--vmd-color)!important;background:#f0f1f5!important}
+        #vmd-widget .vmd-upload-preview{padding:8px 14px!important;background:#f5f6fa!important;border-top:1px solid #eceef2!important;display:flex!important;align-items:center!important;gap:10px!important}
+        #vmd-widget .vmd-upload-preview img{width:60px!important;height:60px!important;object-fit:cover!important;border-radius:8px!important;border:1px solid #e2e5eb!important}
+        #vmd-widget .vmd-upload-preview .vmd-preview-info{flex:1!important;font-size:12px!important;color:#666!important}
+        #vmd-widget .vmd-upload-preview .vmd-preview-remove{width:24px!important;height:24px!important;border-radius:50%!important;border:none!important;background:#ef4444!important;color:#fff!important;cursor:pointer!important;font-size:11px!important;display:flex!important;align-items:center!important;justify-content:center!important}
+        #vmd-lightbox{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;background:rgba(0,0,0,.85)!important;z-index:9999999!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:zoom-out!important;animation:vmd-fade .2s ease!important}
+        @keyframes vmd-fade{from{opacity:0}to{opacity:1}}
+        #vmd-lightbox img{max-width:90%!important;max-height:90%!important;border-radius:8px!important;box-shadow:0 8px 32px rgba(0,0,0,.4)!important;object-fit:contain!important}
     `;
     document.head.appendChild(css);
 
@@ -281,7 +296,10 @@
                 <span class="vmd-typ-txt">Temsilci yazıyor...</span>
             </div>
             <div class="vmd-input-area">
+                <div class="vmd-upload-preview" id="vmd-upload-preview" style="display:none"></div>
                 <div class="vmd-input-wrap">
+                    <button class="vmd-attach" id="vmd-attach-btn" title="Resim Gönder"><i class="fas fa-paperclip"></i></button>
+                    <input type="file" id="vmd-file-input" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none">
                     <textarea class="vmd-input" id="vmd-input" placeholder="Mesajınızı yazın..." rows="1"></textarea>
                     <button class="vmd-send" id="vmd-send-btn" disabled><i class="fas fa-paper-plane"></i></button>
                 </div>
@@ -295,6 +313,10 @@
         const input = document.getElementById('vmd-input');
         input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
         input.addEventListener('input', onInputChange);
+
+        // Image upload
+        document.getElementById('vmd-attach-btn').addEventListener('click', () => document.getElementById('vmd-file-input').click());
+        document.getElementById('vmd-file-input').addEventListener('change', handleFileSelect);
     }
 
     function renderEndScreen() {
@@ -460,11 +482,19 @@
             } else {
                 const showAv = msg.sender_type === 'admin';
                 const init = msg.sender_name ? msg.sender_name[0].toUpperCase() : '?';
+                const isImage = msg.message_type === 'image';
+                let bubbleContent;
+                if (isImage) {
+                    const imgUrl = msg.message.startsWith('http') ? msg.message : `${BASE_URL}/${msg.message}`;
+                    bubbleContent = `<div class="vmd-msg-bbl has-img"><img class="vmd-msg-img" src="${imgUrl}" alt="Resim" onclick="window.__vmd_lightbox('${imgUrl}')" loading="lazy"></div>`;
+                } else {
+                    bubbleContent = `<div class="vmd-msg-bbl">${formatMsg(msg.message)}</div>`;
+                }
                 div.innerHTML = `
                     ${showAv ? `<div class="vmd-msg-av">${init}</div>` : ''}
                     <div class="vmd-msg-c">
                         ${msg.sender_type === 'admin' ? `<span class="vmd-msg-name">${escapeHtml(msg.sender_name || 'Temsilci')}</span>` : ''}
-                        <div class="vmd-msg-bbl">${formatMsg(msg.message)}</div>
+                        ${bubbleContent}
                         <span class="vmd-msg-time">${formatTime(msg.created_at)}</span>
                     </div>`;
             }
@@ -475,6 +505,12 @@
 
     // Send
     async function sendMessage() {
+        // Check for pending image upload first
+        if (pendingFile) {
+            await uploadImageFile();
+            return;
+        }
+
         const input = document.getElementById('vmd-input');
         const message = input.value.trim();
         if (!message || !sessionId) return;
@@ -501,6 +537,102 @@
             }
         } catch (err) { }
         input.focus();
+    }
+
+    // Image upload
+    let pendingFile = null;
+
+    function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            alert('Dosya boyutu çok büyük (max 5MB)');
+            e.target.value = '';
+            return;
+        }
+
+        const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowed.includes(file.type)) {
+            alert('Sadece resim dosyaları yüklenebilir (jpg, png, gif, webp)');
+            e.target.value = '';
+            return;
+        }
+
+        pendingFile = file;
+        showUploadPreview(file);
+    }
+
+    function showUploadPreview(file) {
+        const preview = document.getElementById('vmd-upload-preview');
+        if (!preview) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            preview.innerHTML = `
+                <img src="${e.target.result}" alt="Önizleme">
+                <div class="vmd-preview-info">${escapeHtml(file.name)}<br><small>${(file.size / 1024).toFixed(0)} KB</small></div>
+                <button class="vmd-preview-remove" id="vmd-preview-cancel" title="İptal"><i class="fas fa-times"></i></button>
+            `;
+            preview.style.display = 'flex';
+            document.getElementById('vmd-preview-cancel').addEventListener('click', cancelUpload);
+            document.getElementById('vmd-send-btn').disabled = false;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function cancelUpload() {
+        pendingFile = null;
+        const preview = document.getElementById('vmd-upload-preview');
+        if (preview) { preview.style.display = 'none'; preview.innerHTML = ''; }
+        const fileInput = document.getElementById('vmd-file-input');
+        if (fileInput) fileInput.value = '';
+        const input = document.getElementById('vmd-input');
+        document.getElementById('vmd-send-btn').disabled = !(input && input.value.trim());
+    }
+
+
+    async function uploadImageFile() {
+        if (!pendingFile || !sessionId) return;
+        const file = pendingFile;
+        cancelUpload();
+
+        const tempId = tempIdCounter--;
+        const tempUrl = URL.createObjectURL(file);
+        renderMessages([{ id: tempId, sender_type: 'visitor', sender_name: '', message: tempUrl, message_type: 'image', created_at: new Date().toISOString() }]);
+
+        const formData = new FormData();
+        formData.append('session_id', sessionId);
+        formData.append('image', file);
+
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat.php?action=upload`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.success && data.message_id) {
+                lastMsgId = Math.max(lastMsgId, data.message_id);
+                const tempEl = document.querySelector(`.vmd-msg[data-id="${tempId}"]`);
+                if (tempEl) {
+                    tempEl.dataset.id = data.message_id;
+                    const img = tempEl.querySelector('.vmd-msg-img');
+                    if (img) {
+                        const realUrl = `${BASE_URL}/${data.image_url}`;
+                        img.src = realUrl;
+                        img.onclick = () => window.__vmd_lightbox(realUrl);
+                    }
+                }
+            }
+        } catch (err) { console.error('Upload error:', err); }
+    }
+
+    // Lightbox
+    window.__vmd_lightbox = function (src) {
+        const existing = document.getElementById('vmd-lightbox');
+        if (existing) existing.remove();
+        const lb = document.createElement('div');
+        lb.id = 'vmd-lightbox';
+        lb.innerHTML = `<img src="${src}" alt="Resim">`;
+        lb.addEventListener('click', () => lb.remove());
+        document.body.appendChild(lb);
     }
 
     function onInputChange() {
