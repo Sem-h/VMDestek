@@ -32,6 +32,10 @@ if (!isset($_SESSION['admin_id'])) {
         </div>
         <div class="topbar-center">
             <div class="stats-bar">
+                <div class="stat-item" title="Ziyaretçiler">
+                    <i class="fas fa-eye"></i>
+                    <span id="statVisitors">0</span>
+                </div>
                 <div class="stat-item" title="Bekleyen">
                     <i class="fas fa-clock"></i>
                     <span id="statWaiting">0</span>
@@ -77,6 +81,10 @@ if (!isset($_SESSION['admin_id'])) {
                     </button>
                     <button class="tab" data-tab="closed" onclick="switchTab(this)">
                         <i class="fas fa-check-circle"></i> Kapanan
+                    </button>
+                    <button class="tab" data-tab="visitors" onclick="switchTab(this)">
+                        <i class="fas fa-eye"></i> Ziyaretçiler
+                        <span class="tab-badge" id="visitorsBadge"></span>
                     </button>
                 </div>
             </div>

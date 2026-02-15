@@ -15,6 +15,8 @@ let heartbeatInterval = null;
 let typingTimeout = null;
 let isAdminTyping = false;
 let lastCheck = null;
+let visitorPollInterval = null;
+let activeVisitors = [];
 
 // ============ INIT ============
 document.addEventListener('DOMContentLoaded', () => {
@@ -23,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCannedResponses();
     startConversationPolling();
     startHeartbeat();
+    loadVisitors();
+    startVisitorPolling();
 });
 
 // ============ CONVERSATIONS ============
@@ -67,6 +71,11 @@ async function loadConversations(isInitial = false) {
 }
 
 function renderConversations() {
+    if (currentTab === 'visitors') {
+        renderVisitors();
+        return;
+    }
+
     const list = document.getElementById('conversationList');
     const search = document.getElementById('searchInput').value.toLowerCase();
 
@@ -133,6 +142,7 @@ function updateBadges() {
 
     const waitingBadge = document.getElementById('waitingBadge');
     const activeBadge = document.getElementById('activeBadge');
+    const visitorsBadge = document.getElementById('visitorsBadge');
 
     if (waiting > 0) {
         waitingBadge.textContent = waiting;
@@ -148,16 +158,30 @@ function updateBadges() {
         activeBadge.classList.remove('show');
     }
 
+    // Visitor badge
+    if (visitorsBadge && activeVisitors.length > 0) {
+        visitorsBadge.textContent = activeVisitors.length;
+        visitorsBadge.classList.add('show');
+    } else if (visitorsBadge) {
+        visitorsBadge.classList.remove('show');
+    }
+
     // Update topbar stats
     document.getElementById('statWaiting').textContent = waiting;
     document.getElementById('statActive').textContent = active;
+    const statVisitors = document.getElementById('statVisitors');
+    if (statVisitors) statVisitors.textContent = activeVisitors.length;
 }
 
 function switchTab(el) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     currentTab = el.dataset.tab;
-    loadConversations();
+    if (currentTab === 'visitors') {
+        loadVisitors();
+    } else {
+        loadConversations();
+    }
 }
 
 function filterConversations() {
@@ -706,6 +730,90 @@ function startConversationPolling() {
     setInterval(async () => {
         await loadConversations();
     }, 3000);
+}
+
+// ============ VISITORS ============
+async function loadVisitors() {
+    try {
+        const res = await fetch(`${SITE_URL}/api/visitor.php?action=list`);
+        const data = await res.json();
+        if (data.success) {
+            activeVisitors = data.visitors || [];
+            if (currentTab === 'visitors') {
+                renderVisitors();
+            }
+            updateBadges();
+        }
+    } catch (err) {
+        console.error('Load visitors error:', err);
+    }
+}
+
+function renderVisitors() {
+    const list = document.getElementById('conversationList');
+    const search = document.getElementById('searchInput').value.toLowerCase();
+
+    let filtered = activeVisitors;
+    if (search) {
+        filtered = filtered.filter(v =>
+            (v.page_url || '').toLowerCase().includes(search) ||
+            (v.page_title || '').toLowerCase().includes(search) ||
+            (v.ip_address || '').toLowerCase().includes(search)
+        );
+    }
+
+    if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-state" id="emptyState"><i class="fas fa-eye"></i><p>Aktif ziyaretçi yok</p></div>';
+        return;
+    }
+
+    list.innerHTML = filtered.map(v => {
+        const browser = parseBrowser(v.user_agent || '');
+        const duration = formatDuration(v.duration_seconds || 0);
+        const pageUrl = v.page_url || '';
+        const pagePath = (() => {
+            try { return new URL(pageUrl).pathname; } catch (e) { return pageUrl; }
+        })();
+        const pageTitle = v.page_title || pagePath || 'Bilinmiyor';
+        const uid = (v.visitor_uid || '').substring(0, 6).toUpperCase();
+
+        return `
+            <div class="conv-item visitor-item">
+                <div class="conv-avatar visitor-avatar-live">
+                    <i class="fas fa-user"></i>
+                    <span class="live-pulse"></span>
+                </div>
+                <div class="conv-info">
+                    <div class="conv-name-row">
+                        <span class="conv-name">Ziyaretçi #${uid}</span>
+                        <span class="conv-time visitor-duration"><i class="fas fa-clock"></i> ${duration}</span>
+                    </div>
+                    <div class="conv-preview visitor-page">
+                        <i class="fas fa-globe" style="font-size:10px;margin-right:4px;opacity:0.5"></i>
+                        ${escapeHtml(truncate(pageTitle, 38))}
+                    </div>
+                    <div class="visitor-meta-row">
+                        <span class="visitor-meta-tag"><i class="fas fa-desktop"></i> ${escapeHtml(browser)}</span>
+                        <span class="visitor-meta-tag"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(v.ip_address || '?')}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function formatDuration(seconds) {
+    if (seconds < 60) return seconds + 'sn';
+    if (seconds < 3600) return Math.floor(seconds / 60) + 'dk';
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    return h + 'sa ' + m + 'dk';
+}
+
+function startVisitorPolling() {
+    visitorPollInterval = setInterval(() => {
+        loadVisitors();
+    }, 10000);
 }
 
 function startHeartbeat() {

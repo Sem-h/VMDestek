@@ -318,4 +318,32 @@
             iframeContainer.classList.remove('open');
         }
     });
+
+    // ═══════ VISITOR HEARTBEAT TRACKING ═══════
+    (function initHeartbeat() {
+        // Generate or retrieve unique visitor ID
+        let visitorUid = localStorage.getItem('vmdestek_visitor_uid');
+        if (!visitorUid) {
+            visitorUid = 'v_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
+            localStorage.setItem('vmdestek_visitor_uid', visitorUid);
+        }
+
+        function sendHeartbeat() {
+            const payload = {
+                visitor_uid: visitorUid,
+                page_url: window.location.href,
+                page_title: document.title || '',
+                referrer: document.referrer || ''
+            };
+            fetch(`${WIDGET_URL}/api/visitor.php?action=heartbeat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(() => { });
+        }
+
+        // Send immediately and then every 15 seconds
+        sendHeartbeat();
+        setInterval(sendHeartbeat, 15000);
+    })();
 })();
