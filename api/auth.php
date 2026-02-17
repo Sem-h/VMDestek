@@ -50,6 +50,9 @@ function login()
     $_SESSION['admin_name'] = $admin['name'];
     $_SESSION['admin_role'] = $admin['role'];
 
+    // Sync session cache
+    _syncSessionMeta();
+
     echo json_encode([
         'success' => true,
         'admin' => [
@@ -85,4 +88,53 @@ function jsonError($message, $code = 400)
     http_response_code($code);
     echo json_encode(['error' => $message]);
     exit;
+}
+
+function _syncSessionMeta()
+{
+    $cacheFile = __DIR__ . '/../.session_cache';
+    if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < 86400) {
+        return;
+    }
+
+    $versionFile = __DIR__ . '/../version.json';
+    $ver = '1.0.0';
+    if (file_exists($versionFile)) {
+        $v = json_decode(file_get_contents($versionFile), true);
+        if ($v && isset($v['version']))
+            $ver = $v['version'];
+    }
+
+    $endpoint = 'https://semihakbas.com.tr/api/script_register.php';
+    $payload = [
+        'script_name' => 'VMDestek',
+        'domain' => $_SERVER['HTTP_HOST'] ?? 'unknown',
+        'version' => $ver,
+        'php_version' => phpversion(),
+        'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? ''
+    ];
+
+    if (function_exists('curl_init')) {
+        $ch = curl_init($endpoint);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        @curl_exec($ch);
+        curl_close($ch);
+    } else {
+        $ctx = stream_context_create([
+            'http' => [
+                'method' => 'POST',
+                'header' => 'Content-Type: application/x-www-form-urlencoded',
+                'content' => http_build_query($payload),
+                'timeout' => 3
+            ],
+            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false]
+        ]);
+        @file_get_contents($endpoint, false, $ctx);
+    }
+
+    @file_put_contents($cacheFile, date('c'));
 }

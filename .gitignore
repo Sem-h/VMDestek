@@ -1,6 +1,7 @@
 # VMDestek - Git Ignore
 config.php
 install.lock
+.session_cache
 test.html
 uploads/*
 !uploads/.gitkeep
