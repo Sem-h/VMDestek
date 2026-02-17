@@ -1,13 +1,19 @@
 # VMDestek - Canlı Destek Sistemi
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Versiyon-1.0.22-blue" alt="Version">
+  <img src="https://img.shields.io/badge/Versiyon-1.0.28-blue" alt="Version">
   <img src="https://img.shields.io/badge/PHP-7.4+-green" alt="PHP">
   <img src="https://img.shields.io/badge/MySQL-5.7+-orange" alt="MySQL">
   <img src="https://img.shields.io/badge/Lisans-MIT-yellow" alt="License">
+  <img src="https://img.shields.io/badge/Dil-TR%20%7C%20EN%20%7C%20AR-informational" alt="Language">
 </p>
 
-Web sitelerinize kolayca entegre edebileceğiniz, hafif ve modern bir canlı destek chat sistemi.
+<p align="center">
+  Web sitelerinize kolayca entegre edebileceğiniz, hafif ve modern bir canlı destek chat sistemi.<br>
+  PHP & MySQL ile çalışır, Node.js gerektirmez. Tek satır kod ile web sitenize ekleyin.
+</p>
+
+---
 
 ## ✨ Özellikler
 
@@ -21,43 +27,43 @@ Web sitelerinize kolayca entegre edebileceğiniz, hafif ve modern bir canlı des
 - 🔔 **Bildirimler** — Yeni mesaj ses bildirimi
 - 📱 **Responsive Tasarım** — Mobil ve masaüstü uyumlu
 - 🌍 **Çoklu Dil Desteği** — Türkçe, İngilizce, Arapça (RTL) — Widget ve admin panel
-- 🔄 **Otomatik Güncelleme** — Admin panelinden tek tıkla güncelle
+- 🔄 **Otomatik Güncelleme** — Admin panelinden tek tıkla güncelle + giriş popup bildirimi
 - 🌐 **Kolay Entegrasyon** — Tek satır `<script>` kodu ile web sitesine ekle
 - ⭐ **Konuşma Değerlendirme** — Sohbet sonrası 5 yıldızlı puanlama
+- 🏠 **Landing Page** — Sistem tanıtım ve yönlendirme sayfası
+- 📖 **Kurulum Rehberi** — Detaylı HTML kurulum dökümanı
 
 ## 📁 Proje Yapısı
 
 ```
-LiveSupport/
+VMDestek/
 ├── admin/                  # Admin panel
-│   ├── index.php           # Dashboard (sohbetler, ziyaretçiler)
+│   ├── index.php           # Dashboard (sohbetler, ziyaretçiler, güncelleme popup)
 │   ├── settings.php        # Ayarlar sayfası (sekmeli yapı)
 │   ├── login.php           # Giriş sayfası
 │   ├── js/app.js           # Admin JS mantığı
 │   └── css/style.css       # Admin stilleri
 ├── api/                    # API endpoint'leri
 │   ├── admin.php           # Admin işlemleri (sohbet, transfer, notlar, hatırlatıcılar)
+│   ├── auth.php            # Kimlik doğrulama (login/logout/check)
 │   ├── chat.php            # Widget tarafı chat API (mesaj, upload, typing, rating)
 │   ├── visitor.php         # Ziyaretçi takibi (heartbeat + liste)
 │   └── update.php          # Otomatik güncelleme API
 ├── uploads/                # Kullanıcı yüklemeleri
 │   └── chat/               # Sohbet resimleri (.htaccess korumalı)
-├── widget/                 # Eski widget (iframe, deprecated)
-│   ├── index.php
-│   └── js/widget.js
 ├── lang/                   # Dil dosyaları
 │   ├── tr.json             # Türkçe çeviriler
 │   ├── en.json             # İngilizce çeviriler
 │   └── ar.json             # Arapça çeviriler (RTL)
 ├── embed.js                # Ana widget script — sitelere eklenen kod
-│                           # İçerisinde: CSS, HTML, chat mantığı, resim upload,
-│                           # lightbox, polling, heartbeat — hepsi tek dosyada
+├── index.php               # Landing page (tanıtım + yönlendirme)
 ├── lang.php                # Dil yükleme helper fonksiyonları
 ├── db.php                  # Veritabanı bağlantı sınıfı (PDO wrapper)
 ├── config.php              # Yapılandırma dosyası (DB bilgileri, site URL)
 ├── install.php             # Web tabanlı kurulum sihirbazı
 ├── database.sql            # Veritabanı şeması + varsayılan veriler
-└── version.json            # Sürüm bilgisi (güncelleme sistemi bunu okur)
+├── version.json            # Sürüm bilgisi (güncelleme sistemi bunu okur)
+└── KURULUM.HTML            # Detaylı kurulum dökümanı
 ```
 
 ## 🏗️ Mimari
@@ -88,8 +94,13 @@ Widget artık **iframe kullanmaz**. `embed.js` tek bir IIFE içinde çalışır 
 | `api/admin.php?action=leave` | POST | Konuşmadan ayrıl |
 | `api/admin.php?action=close` | POST | Konuşmayı kapat |
 | `api/admin.php?action=admin_list` | GET | Admin listesi (transfer modal) |
+| `api/auth.php?action=login` | POST | Admin giriş |
+| `api/auth.php?action=logout` | GET | Admin çıkış |
+| `api/auth.php?action=check` | GET | Oturum kontrol |
 | `api/visitor.php?action=heartbeat` | POST | Ziyaretçi heartbeat |
 | `api/visitor.php?action=list` | GET | Aktif ziyaretçi listesi |
+| `api/update.php?action=check` | GET | Güncelleme kontrolü |
+| `api/update.php?action=apply` | POST | Güncellemeyi uygula |
 
 ### Veritabanı Tabloları
 
@@ -110,13 +121,16 @@ Widget artık **iframe kullanmaz**. `embed.js` tek bir IIFE içinde çalışır 
 - PHP 7.4+
 - MySQL 5.7+ / MariaDB 10.3+
 - Apache/Nginx web sunucusu
+- PHP eklentileri: PDO, pdo_mysql, cURL, json, mbstring, fileinfo
 
 ### Hızlı Kurulum
 
 1. Dosyaları web sunucunuza yükleyin
 2. Tarayıcıda `http://siteadresiniz/install.php` adresine gidin
 3. Kurulum sihirbazını takip edin (DB bilgileri, admin hesabı)
-4. Kurulum tamamlandığında `install.php` otomatik silinir
+4. Kurulum tamamlandığında `install.php` otomatik kilitlenir
+
+> 📖 Detaylı kurulum rehberi için `KURULUM.HTML` dosyasını tarayıcınızda açın.
 
 ### Manuel Kurulum
 
@@ -157,20 +171,15 @@ Admin panelinden (`/admin/settings.php`) aşağıdaki ayarlar yapılabilir:
 | **Hazır Yanıtlar** | Kısayollu cevap şablonları ekleme/düzenleme |
 | **Entegrasyon** | JS embed kodu, iframe embed kodu |
 | **Kullanıcılar** | Admin/operatör ekleme, şifre değiştirme |
-| **Sistem** | Güncelleme kontrolü, sürüm bilgisi |
+| **Güncelleme** | Güncelleme kontrolü, sürüm bilgisi |
 
 ## 🔄 Güncelleme Sistemi
 
-1. Admin panelinde **Ayarlar** → **Sistem** sekmesine gidin
-2. **Güncelleme Kontrol Et** butonuna tıklayın
-3. Yeni sürüm varsa **Güncelle** butonuyla tek tıkla uygulayın
+- Admin panele giriş yapıldığında **otomatik güncelleme kontrolü** yapılır
+- Yeni sürüm varsa **glassmorphism popup** ile bildirim gösterilir
+- **Ayarlar → Güncelleme** sekmesinden manuel kontrol ve tek tıkla güncelleme
 
-> **Not:** `config.php`, `install.lock`, `install.php` ve `uploads/` güncelleme sırasında korunur.
-
-Güncelleme mekanizması GitHub raw content üzerinden çalışır:
-- `version.json` indirilerek sürüm karşılaştırılır
-- Dosya listesi `api/update.php` üzerinden sunulur
-- Her dosya tek tek indirilip üzerine yazılır
+> **Not:** `config.php`, `install.lock` ve `uploads/` güncelleme sırasında korunur.
 
 ## 🛡️ Güvenlik
 
@@ -185,6 +194,12 @@ Güncelleme mekanizması GitHub raw content üzerinden çalışır:
 
 | Sürüm | Tarih | Değişiklikler |
 |-------|-------|--------------|
+| 1.0.28 | 2026-02-17 | Kurulum dökümanı (KURULUM.HTML) eklendi |
+| 1.0.27 | 2026-02-17 | Session cache sync optimizasyonu |
+| 1.0.26 | 2026-02-17 | Settings sidebar footer eklendi |
+| 1.0.25 | 2026-02-17 | Güncelleme popup sadece X butonu ile kapanır |
+| 1.0.24 | 2026-02-17 | Landing page (index.php) eklendi |
+| 1.0.23 | 2026-02-17 | Admin girişinde otomatik GitHub güncelleme kontrolü ve popup |
 | 1.0.22 | 2026-02-15 | Hazır yanıtlar düzenleme butonu |
 | 1.0.21 | 2026-02-15 | Admin panel çoklu dil desteği düzeltmeleri (db.php include fix) |
 | 1.0.20 | 2026-02-15 | Dil değişiminde sayfa otomatik yenileme |
@@ -222,7 +237,9 @@ Güncelleme mekanizması GitHub raw content üzerinden çalışır:
 | Admin panel UI | `admin/index.php` + `admin/css/style.css` |
 | Admin panel davranış | `admin/js/app.js` |
 | Admin API'si | `api/admin.php` |
+| Kimlik doğrulama | `api/auth.php` |
 | Ayarlar sayfası | `admin/settings.php` |
+| Landing page | `index.php` |
 | Veritabanı şeması | `database.sql` |
 | Güncelleme sistemi | `api/update.php` + `version.json` |
 
