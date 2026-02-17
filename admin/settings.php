@@ -795,6 +795,7 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
             transform: translateY(0);
             opacity: 1;
         }
+
         .edit-canned {
             background: none;
             border: none;
@@ -874,6 +875,14 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
                 <a href="index.php" class="btn-back-nav">
                     <i class="fas fa-arrow-left"></i> Panele Dön
                 </a>
+                <div
+                    style="text-align:center;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.04);font-size:11px;color:rgba(255,255,255,0.2);">
+                    <a href="https://semihakbas.com.tr" target="_blank"
+                        style="color:rgba(255,255,255,0.3);text-decoration:none;transition:color 0.2s;"
+                        onmouseover="this.style.color='#667eea'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
+                        <i class="fas fa-code" style="margin-right:4px;font-size:10px;"></i>Semih AKBAŞ
+                    </a>
+                </div>
             </div>
         </nav>
 
