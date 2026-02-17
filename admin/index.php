@@ -339,7 +339,7 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
     </audio>
 
     <!-- Update Notification Popup -->
-    <div class="update-overlay" id="updateOverlay" style="display:none" onclick="closeUpdatePopup(event)">
+    <div class="update-overlay" id="updateOverlay" style="display:none">
         <div class="update-popup">
             <button class="update-popup-close" onclick="closeUpdatePopup()">&times;</button>
             <div class="update-popup-icon">
@@ -347,7 +347,8 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
             </div>
             <h2 class="update-popup-title"><?= $L['update_available'] ?? 'Güncelleme Mevcut!' ?></h2>
             <p class="update-popup-desc">
-                <?= $L['update_available_desc'] ?? 'VMDestek için yeni bir sürüm yayınlandı.' ?></p>
+                <?= $L['update_available_desc'] ?? 'VMDestek için yeni bir sürüm yayınlandı.' ?>
+            </p>
             <div class="update-popup-versions">
                 <div class="update-popup-ver current">
                     <span class="ver-label"><?= $L['current_version'] ?? 'Mevcut' ?></span>
@@ -628,8 +629,7 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
             }
         }
 
-        function closeUpdatePopup(e) {
-            if (e && e.target !== e.currentTarget) return;
+        function closeUpdatePopup() {
             document.getElementById('updateOverlay').style.display = 'none';
         }
     </script>
