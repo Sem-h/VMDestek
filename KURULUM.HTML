@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VMDestek — Kurulum Rehberi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #06060f;
+            color: #c8d0e0;
+            line-height: 1.7;
+        }
+
+        /* Background */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: 30%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+        }
+
+        .bg-glow::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            right: 15%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.08) 0%, transparent 70%);
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .doc-header {
+            text-align: center;
+            padding: 64px 0 48px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            margin-bottom: 48px;
+        }
+
+        .doc-header .logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+
+        .doc-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .doc-header h1 span {
+            background: linear-gradient(135deg, #667eea, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .doc-header p {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 15px;
+        }
+
+        .doc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            margin-top: 16px;
+            background: rgba(102, 126, 234, 0.08);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #93a4f4;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .section-title .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+        }
+
+        .icon-blue {
+            background: rgba(102, 126, 234, 0.12);
+            color: #667eea;
+        }
+
+        .icon-green {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+        }
+
+        .icon-amber {
+            background: rgba(245, 158, 11, 0.12);
+            color: #f59e0b;
+        }
+
+        .icon-rose {
+            background: rgba(244, 63, 94, 0.12);
+            color: #f43f5e;
+        }
+
+        .icon-sky {
+            background: rgba(14, 165, 233, 0.12);
+            color: #0ea5e9;
+        }
+
+        .icon-violet {
+            background: rgba(139, 92, 246, 0.12);
+            color: #8b5cf6;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 16px;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card p,
+        .card li {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .card ul {
+            padding-left: 18px;
+        }
+
+        .card li {
+            margin-bottom: 4px;
+        }
+
+        /* Step cards */
+        .step {
+            display: flex;
+            gap: 20px;
+            padding: 24px 28px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            margin-bottom: 14px;
+        }
+
+        .step:hover {
+            border-color: rgba(102, 126, 234, 0.15);
+        }
+
+        .step-num {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+        }
+
+        .step-body {
+            flex: 1;
+        }
+
+        .step-body h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 6px;
+        }
+
+        .step-body p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #93a4f4;
+            margin: 12px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block .label {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.2);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .code-block .tag {
+            color: #f43f5e;
+        }
+
+        .code-block .attr {
+            color: #f59e0b;
+        }
+
+        .code-block .val {
+            color: #10b981;
+        }
+
+        .code-block .comment {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Requirements grid */
+        .req-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .req-item {
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .req-item i {
+            font-size: 22px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .req-item .req-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .req-item .req-ver {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* Info box */
+        .info-box {
+            display: flex;
+            gap: 12px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin: 14px 0;
+        }
+
+        .info-box i {
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .info-box.tip {
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+        }
+
+        .info-box.warning {
+            background: rgba(245, 158, 11, 0.06);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+        }
+
+        .info-box.danger {
+            background: rgba(244, 63, 94, 0.06);
+            border: 1px solid rgba(244, 63, 94, 0.15);
+            color: #fca5a5;
+        }
+
+        .info-box.info {
+            background: rgba(102, 126, 234, 0.06);
+            border: 1px solid rgba(102, 126, 234, 0.15);
+            color: #93a4f4;
+        }
+
+        /* Table */
+        .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            font-size: 13px;
+        }
+
+        .doc-table th {
+            text-align: left;
+            padding: 10px 14px;
+            background: rgba(102, 126, 234, 0.06);
+            color: #93a4f4;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .doc-table td {
+            padding: 10px 14px;
+            color: rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .doc-table tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .doc-table code {
+            padding: 2px 8px;
+            background: rgba(102, 126, 234, 0.08);
+            border-radius: 4px;
+            color: #93a4f4;
+            font-size: 12px;
+        }
+
+        /* Footer */
+        .doc-footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 48px;
+        }
+
+        .doc-footer p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .doc-footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .doc-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .doc-header h1 {
+                font-size: 28px;
+            }
+
+            .req-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .step {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-glow"></div>
+
+    <div class="content">
+
+        <!-- Header -->
+        <div class="doc-header">
+            <div class="logo"><i class="fas fa-headset"></i></div>
+            <h1>VM<span>Destek</span> — Kurulum Rehberi</h1>
+            <p>Canlı destek sisteminizi dakikalar içinde kurup çalıştırın</p>
+            <div class="doc-badge"><i class="fas fa-book"></i> Dokümantasyon v1.0</div>
+        </div>
+
+        <!-- 1. Gereksinimler -->
+        <div class="section">
+            <div class="section-title">
+                <div class="icon icon-blue"><i class="fas fa-server"></i></div>
+                Sistem Gereksinimleri
+            </div>
+
+            <div class="req-grid">
+                <div class="req-item">
+                    <i class="fab fa-php" style="color:#7B7FB5"></i>
+                    <div class="req-name">PHP</div>
+                    <div class="req-ver">7.4 veya üzeri</div>
+                </div>
+                <div class="req-item">
+                    <i class="fas fa-database" style="color:#F29111"></i>
+                    <div class="req-name">MySQL / MariaDB</div>
+                    <div class="req-ver">5.7+ / 10.3+</div>
+                </div>
+                <div class="req-item">
+                    <i class="fas fa-globe" style="color:#E44D26"></i>
+                    <div class="req-name">Web Sunucusu</div>
+                    <div class="req-ver">Apache veya Nginx</div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:16px">
+                <h4><i class="fas fa-puzzle-piece" style="color:#667eea"></i> Gerekli PHP Eklentileri</h4>
+                <ul>
+                    <li><strong>PDO + pdo_mysql</strong> — Veritabanı bağlantısı</li>
+                    <li><strong>cURL</strong> — Güncelleme kontrolü ve dış API iletişimi</li>
+                    <li><strong>json</strong> — API yanıtları</li>
+                    <li><strong>mbstring</strong> — Türkçe karakter desteği</li>
+                    <li><strong>fileinfo</strong> — Dosya yükleme doğrulaması</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 2. Kurulum Adımları -->
+        <div class="section">
+            <div class="section-title">
+                <div class="icon icon-green"><i class="fas fa-rocket"></i></div>
+                Kurulum Adımları
+            </div>
+
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <h4>Dosyaları Yükleyin</h4>
+                    <p>
+                        ZIP dosyasını indirin ve tüm dosyaları web sunucunuza (public_html veya htdocs klasörü)
+                        yükleyin.
+                        Alt klasöre de kurabilirsiniz, örneğin: <code>public_html/destek/</code>
+                    </p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <h4>Kurulum Sihirbazını Açın</h4>
+                    <p>Tarayıcınızda aşağıdaki adresi ziyaret edin:</p>
+                    <div class="code-block">
+                        <span class="val">https://siteadresiniz.com/install.php</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <h4>Veritabanı Bilgilerini Girin</h4>
+                    <p>MySQL veritabanı bilgilerinizi girin. Sihirbaz tabloları otomatik oluşturacaktır.</p>
+                    <table class="doc-table">
+                        <tr>
+                            <th>Alan</th>
+                            <th>Açıklama</th>
+                            <th>Örnek</th>
+                        </tr>
+                        <tr>
+                            <td>Sunucu</td>
+                            <td>MySQL sunucu adresi</td>
+                            <td><code>localhost</code></td>
+                        </tr>
+                        <tr>
+                            <td>Veritabanı</td>
+                            <td>Veritabanı adı</td>
+                            <td><code>livesupport</code></td>
+                        </tr>
+                        <tr>
+                            <td>Kullanıcı</td>
+                            <td>MySQL kullanıcı adı</td>
+                            <td><code>root</code></td>
+                        </tr>
+                        <tr>
+                            <td>Şifre</td>
+                            <td>MySQL şifresi</td>
+                            <td><code>•••••</code></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <h4>Admin Hesabı Oluşturun</h4>
+                    <p>İlk admin hesabınızı oluşturun. Bu hesapla admin panele giriş yapacaksınız.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">5</div>
+                <div class="step-body">
+                    <h4>Kurulumu Tamamlayın</h4>
+                    <p>Kurulum tamamlandığında <code>install.php</code> güvenlik için otomatik olarak kilitlenir. Admin
+                        panele yönlendirilirsiniz.</p>
+                    <div class="code-block">
+                        <span class="val">https://siteadresiniz.com/admin/login.php</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box tip">
+                <i class="fas fa-check-circle"></i>
+                <span>Kurulum sihirbazı veritabanı tablolarını, varsayılan ayarları ve config dosyasını otomatik
+                    oluşturur. Manuel müdahale gerekmez.</span>
+            </div>
+        </div>
+
+        <!-- 3. Web Sitesine Ekleme -->
+        <div class="section">
+            <div class="section-title">
+                <div class="icon icon-amber"><i class="fas fa-code"></i></div>
+                Web Sitesine Ekleme
+            </div>
+
+            <div class="card">
+                <h4><i class="fas fa-magic" style="color:#f59e0b"></i> Tek Satır Entegrasyon</h4>
+                <p>Web sitenizin <code>&lt;/body&gt;</code> etiketinden hemen önce aşağıdaki kodu ekleyin:</p>
+                <div class="code-block">
+                    <span class="label">HTML</span>
+                    <span class="tag">&lt;script</span> <span class="attr">src</span>=<span
+                        class="val">"https://siteadresiniz.com/embed.js"</span><span
+                        class="tag">&gt;&lt;/script&gt;</span>
+                </div>
+                <p>Bu kod otomatik olarak:</p>
+                <ul>
+                    <li>Sağ alt köşeye sohbet butonu ekler</li>
+                    <li>3 saniye sonra karşılama baloncuğu gösterir</li>
+                    <li>Butona tıklandığında chat widget'ı açılır</li>
+                    <li>Online/offline durumuna göre farklı form gösterir</li>
+                </ul>
+            </div>
+
+            <div class="info-box info">
+                <i class="fas fa-info-circle"></i>
+                <span>Embed kodunu admin paneldeki <strong>Ayarlar → Entegrasyon</strong> sekmesinden de
+                    kopyalayabilirsiniz.</span>
+            </div>
+        </div>
+
+        <!-- 4. Admin Panel -->
+        <div class="section">
+            <div class="section-title">
+                <div class="icon icon-violet"><i class="fas fa-shield-alt"></i></div>
+                Admin Panel Kullanımı
+            </div>
+
+            <div class="card">
+                <h4><i class="fas fa-sign-in-alt" style="color:#8b5cf6"></i> Giriş</h4>
+                <div class="code-block">
+                    <span class="val">https://siteadresiniz.com/admin/</span>
+                </div>
+                <p>Kurulumda oluşturduğunuz kullanıcı adı ve şifre ile giriş yapın.</p>
+            </div>
+
+            <table class="doc-table">
+                <tr>
+                    <th>Bölüm</th>
+                    <th>Açıklama</th>
+                </tr>
+                <tr>
+                    <td><strong>Dashboard</strong></td>
+                    <td>Aktif sohbetler, bekleyen ve kapanan konuşmalar, anlık ziyaretçiler</td>
+                </tr>
+                <tr>
+                    <td><strong>Ayarlar → Görünüm</strong></td>
+                    <td>Widget renkleri, gradient, şirket adı, logo</td>
+                </tr>
+                <tr>
+                    <td><strong>Ayarlar → Mesajlar</strong></td>
+                    <td>Karşılama mesajı, çevrimdışı mesajı, dil seçimi</td>
+                </tr>
+                <tr>
+                    <td><strong>Ayarlar → Hazır Yanıtlar</strong></td>
+                    <td>Sık kullanılan cevap şablonları (<code>/</code> kısayolları)</td>
+                </tr>
+                <tr>
+                    <td><strong>Ayarlar → Entegrasyon</strong></td>
+                    <td>Embed kodu (JS ve iframe)</td>
+                </tr>
+                <tr>
+                    <td><strong>Ayarlar → Kullanıcılar</strong></td>
+                    <td>Admin/operatör ekleme ve yönetimi</td>
+                </tr>
+                <tr>
+                    <td><strong>Ayarlar → Güncelleme</strong></td>
+                    <td>GitHub'dan otomatik güncelleme kontrolü</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 5. Güncelleme -->
+        <div class="section">
+            <div class="section-title">
+                <div class="icon icon-sky"><i class="fas fa-cloud-download-alt"></i></div>
+                Güncelleme
+            </div>
+
+            <div class="card">
+                <h4><i class="fas fa-sync" style="color:#0ea5e9"></i> Otomatik Güncelleme</h4>
+                <p>VMDestek, GitHub üzerinden otomatik güncelleme desteği sunar:</p>
+                <ol style="padding-left:18px; margin-top:8px;">
+                    <li>Admin panelinde <strong>Ayarlar → Güncelleme</strong> sekmesine gidin</li>
+                    <li><strong>Güncelleme Kontrol Et</strong> butonuna tıklayın</li>
+                    <li>Yeni sürüm varsa <strong>Güncelle</strong> butonuyla uygulayın</li>
+                </ol>
+            </div>
+
+            <div class="info-box tip">
+                <i class="fas fa-shield-alt"></i>
+                <span>Güncelleme sırasında <code>config.php</code>, <code>install.lock</code> ve <code>uploads/</code>
+                    klasörü korunur. Ayarlarınız ve yüklenen dosyalar etkilenmez.</span>
+            </div>
+        </div>
+
+        <!-- 6. Proje Yapısı -->
+        <div class="section">
+            <div class="section-title">
+                <div class="icon icon-amber"><i class="fas fa-folder-tree"></i></div>
+                Proje Yapısı
+            </div>
+
+            <div class="code-block" style="line-height:1.9">
+                <span class="label">Dosya Yapısı</span>
+                <span class="comment">VMDestek/</span>
+                ├── <span class="attr">admin/</span> <span class="comment">← Admin panel</span>
+                │ ├── index.php <span class="comment">← Dashboard</span>
+                │ ├── settings.php <span class="comment">← Ayarlar</span>
+                │ ├── login.php <span class="comment">← Giriş sayfası</span>
+                │ ├── js/app.js <span class="comment">← Admin JS</span>
+                │ └── css/style.css <span class="comment">← Admin CSS</span>
+                ├── <span class="attr">api/</span> <span class="comment">← API endpoint'leri</span>
+                │ ├── admin.php <span class="comment">← Admin API</span>
+                │ ├── chat.php <span class="comment">← Widget chat API</span>
+                │ ├── visitor.php <span class="comment">← Ziyaretçi takibi</span>
+                │ └── update.php <span class="comment">← Güncelleme API</span>
+                ├── <span class="attr">uploads/chat/</span> <span class="comment">← Sohbet görselleri</span>
+                ├── <span class="attr">lang/</span> <span class="comment">← Dil dosyaları (TR/EN/AR)</span>
+                ├── <span class="val">embed.js</span> <span class="comment">← Widget kodu (sitelere eklenir)</span>
+                ├── <span class="val">config.php</span> <span class="comment">← Veritabanı ayarları</span>
+                ├── <span class="val">db.php</span> <span class="comment">← PDO bağlantı sınıfı</span>
+                ├── <span class="val">install.php</span> <span class="comment">← Kurulum sihirbazı</span>
+                ├── <span class="val">database.sql</span> <span class="comment">← Veritabanı şeması</span>
+                └── <span class="val">version.json</span> <span class="comment">← Sürüm bilgisi</span>
+            </div>
+        </div>
+
+        <!-- 7. Sorun Giderme -->
+        <div class="section">
+            <div class="section-title">
+                <div class="icon icon-rose"><i class="fas fa-bug"></i></div>
+                Sorun Giderme
+            </div>
+
+            <div class="card">
+                <h4><i class="fas fa-exclamation-triangle" style="color:#f59e0b"></i> Sık Karşılaşılan Sorunlar</h4>
+                <table class="doc-table">
+                    <tr>
+                        <th>Sorun</th>
+                        <th>Çözüm</th>
+                    </tr>
+                    <tr>
+                        <td>Kurulum sayfası açılmıyor</td>
+                        <td>PHP'nin çalıştığından ve dosyaların doğru dizine yüklendiğinden emin olun</td>
+                    </tr>
+                    <tr>
+                        <td>Veritabanı bağlantı hatası</td>
+                        <td>MySQL bilgilerini kontrol edin. Veritabanının oluşturulmuş olduğundan emin olun</td>
+                    </tr>
+                    <tr>
+                        <td>Widget görünmüyor</td>
+                        <td><code>embed.js</code> URL'sinin doğru olduğunu ve CORS ayarlarının açık olduğunu kontrol
+                            edin</td>
+                    </tr>
+                    <tr>
+                        <td>Resim yüklenemiyor</td>
+                        <td><code>uploads/chat/</code> klasörüne yazma izni verin: <code>chmod 755</code></td>
+                    </tr>
+                    <tr>
+                        <td>Türkçe karakterler bozuk</td>
+                        <td>Veritabanı charset'inin <code>utf8mb4</code> olduğundan emin olun</td>
+                    </tr>
+                    <tr>
+                        <td>Güncelleme çalışmıyor</td>
+                        <td>Sunucunun GitHub'a erişebildiğini ve cURL eklentisinin aktif olduğunu kontrol edin</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="info-box warning">
+                <i class="fas fa-triangle-exclamation"></i>
+                <span><strong>Güvenlik:</strong> Kurulum tamamlandıktan sonra <code>install.php</code> dosyasının
+                    kilitlendiğinden emin olun. Dosya otomatik kilitlenir ancak manuel kontrol önerilir.</span>
+            </div>
+        </div>
+
+        <!-- 8. Destek -->
+        <div class="section">
+            <div class="section-title">
+                <div class="icon icon-green"><i class="fas fa-life-ring"></i></div>
+                Destek & İletişim
+            </div>
+
+            <div class="card">
+                <h4><i class="fab fa-github" style="color:white"></i> Kaynak Kod & Sorun Bildirimi</h4>
+                <p>
+                    GitHub üzerinden kaynak koda erişebilir, sorun bildirebilir ve katkıda bulunabilirsiniz:<br>
+                    <a href="https://github.com/Sem-h/VMDestek" target="_blank"
+                        style="color:#667eea; text-decoration:none; font-weight:600;">
+                        <i class="fas fa-external-link-alt"
+                            style="font-size:11px; margin-right:4px;"></i>github.com/Sem-h/VMDestek
+                    </a>
+                </p>
+            </div>
+
+            <div class="card">
+                <h4><i class="fas fa-globe" style="color:#10b981"></i> Geliştirici</h4>
+                <p>
+                    <strong style="color:white">Semih AKBAŞ</strong> —
+                    <a href="https://semihakbas.com.tr" target="_blank"
+                        style="color:#667eea; text-decoration:none;">semihakbas.com.tr</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="doc-footer">
+            <p>
+                VMDestek &copy; 2026
+                <a href="https://semihakbas.com.tr" target="_blank">Semih AKBAŞ</a>
+                — MIT License
+            </p>
+        </div>
+
+    </div>
+</body>
+
+</html>
