@@ -338,11 +338,300 @@ $dir = isset($L['dir']) ? $L['dir'] : 'ltr';
             type="audio/wav">
     </audio>
 
+    <!-- Update Notification Popup -->
+    <div class="update-overlay" id="updateOverlay" style="display:none" onclick="closeUpdatePopup(event)">
+        <div class="update-popup">
+            <button class="update-popup-close" onclick="closeUpdatePopup()">&times;</button>
+            <div class="update-popup-icon">
+                <i class="fas fa-arrow-up-from-bracket"></i>
+            </div>
+            <h2 class="update-popup-title"><?= $L['update_available'] ?? 'Güncelleme Mevcut!' ?></h2>
+            <p class="update-popup-desc">
+                <?= $L['update_available_desc'] ?? 'VMDestek için yeni bir sürüm yayınlandı.' ?></p>
+            <div class="update-popup-versions">
+                <div class="update-popup-ver current">
+                    <span class="ver-label"><?= $L['current_version'] ?? 'Mevcut' ?></span>
+                    <span class="ver-number" id="updateCurrentVer">-</span>
+                </div>
+                <div class="update-popup-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="update-popup-ver new">
+                    <span class="ver-label"><?= $L['new_version'] ?? 'Yeni' ?></span>
+                    <span class="ver-number" id="updateNewVer">-</span>
+                </div>
+            </div>
+            <div class="update-popup-commit" id="updateCommitInfo" style="display:none">
+                <i class="fas fa-code-commit"></i>
+                <span id="updateCommitMsg"></span>
+            </div>
+            <a href="settings.php" class="update-popup-btn">
+                <i class="fas fa-download"></i>
+                <?= $L['go_to_update_page'] ?? 'Güncelleme Sayfasına Git' ?>
+            </a>
+        </div>
+    </div>
+
+    <style>
+        /* ═══════ UPDATE POPUP ═══════ */
+        .update-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: overlayFadeIn 0.3s ease;
+        }
+
+        @keyframes overlayFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .update-popup {
+            background: rgba(20, 20, 45, 0.95);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 24px;
+            padding: 40px 44px;
+            max-width: 440px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.5), 0 0 80px rgba(102, 126, 234, 0.1);
+            animation: popupSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popupSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .update-popup-close {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .update-popup-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .update-popup-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.35);
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 8px 32px rgba(16, 185, 129, 0.35);
+            }
+
+            50% {
+                box-shadow: 0 8px 48px rgba(16, 185, 129, 0.55);
+            }
+        }
+
+        .update-popup-title {
+            color: #fff;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .update-popup-desc {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .update-popup-versions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .update-popup-ver {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 24px;
+            border-radius: 14px;
+            min-width: 100px;
+        }
+
+        .update-popup-ver.current {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .update-popup-ver.new {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .ver-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .update-popup-ver.new .ver-label {
+            color: #6ee7b7;
+        }
+
+        .ver-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .update-popup-ver.new .ver-number {
+            color: #10b981;
+        }
+
+        .update-popup-arrow {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 18px;
+        }
+
+        .update-popup-commit {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.45);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .update-popup-commit i {
+            color: #667eea;
+            font-size: 13px;
+        }
+
+        .update-popup-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .update-popup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(16, 185, 129, 0.4);
+        }
+
+        .update-popup-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+
     <script>
         const SITE_URL = '<?= SITE_URL ?>';
         const ADMIN_ID = <?= $_SESSION['admin_id'] ?>;
         const ADMIN_NAME = '<?= addslashes($_SESSION['admin_name']) ?>';
         const LANG = <?= json_encode($L, JSON_UNESCAPED_UNICODE) ?>;
+
+        // GitHub güncelleme kontrolü - Sayfa yüklendiğinde çalışır
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(checkForUpdate, 2000); // 2sn sonra kontrol et (sayfa tam yüklensin)
+        });
+
+        async function checkForUpdate() {
+            try {
+                const res = await fetch(SITE_URL + '/api/update.php?action=check');
+                const data = await res.json();
+
+                if (data.success && data.has_update) {
+                    // Versiyonları doldur
+                    document.getElementById('updateCurrentVer').textContent = 'v' + data.local_version.version;
+                    document.getElementById('updateNewVer').textContent = 'v' + data.remote_version.version;
+
+                    // Commit bilgisi varsa göster
+                    if (data.commit && data.commit.message) {
+                        document.getElementById('updateCommitMsg').textContent = data.commit.message;
+                        document.getElementById('updateCommitInfo').style.display = 'flex';
+                    }
+
+                    // Popup'ı göster
+                    document.getElementById('updateOverlay').style.display = 'flex';
+                }
+            } catch (e) {
+                // Sessizce hata yut - güncelleme kontrolü critical değil
+                console.log('Güncelleme kontrolü başarısız:', e.message);
+            }
+        }
+
+        function closeUpdatePopup(e) {
+            if (e && e.target !== e.currentTarget) return;
+            document.getElementById('updateOverlay').style.display = 'none';
+        }
     </script>
     <script src="js/app.js"></script>
 </body>

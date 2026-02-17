@@ -1,7 +1,7 @@
 # VMDestek - Canlı Destek Sistemi
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Versiyon-1.0.21-blue" alt="Version">
+  <img src="https://img.shields.io/badge/Versiyon-1.0.22-blue" alt="Version">
   <img src="https://img.shields.io/badge/PHP-7.4+-green" alt="PHP">
   <img src="https://img.shields.io/badge/MySQL-5.7+-orange" alt="MySQL">
   <img src="https://img.shields.io/badge/Lisans-MIT-yellow" alt="License">
@@ -185,7 +185,11 @@ Güncelleme mekanizması GitHub raw content üzerinden çalışır:
 
 | Sürüm | Tarih | Değişiklikler |
 |-------|-------|--------------|
+| 1.0.22 | 2026-02-15 | Hazır yanıtlar düzenleme butonu |
 | 1.0.21 | 2026-02-15 | Admin panel çoklu dil desteği düzeltmeleri (db.php include fix) |
+| 1.0.20 | 2026-02-15 | Dil değişiminde sayfa otomatik yenileme |
+| 1.0.19 | 2026-02-15 | Güncelleme sistemi iyileştirmeleri |
+| 1.0.18 | 2026-02-15 | Admin panel çoklu dil desteği (TR/EN/AR) |
 | 1.0.17 | 2026-02-15 | Widget çoklu dil desteği (TR/EN/AR), RTL desteği |
 | 1.0.16 | 2026-02-15 | Ziyaretçi resim gönderme (upload, önizleme, lightbox) |
 | 1.0.15 | 2026-02-15 | Widget CSS scoped selectors, host sayfa izolasyonu |
